@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: beauty-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: beauty
+      POSTGRES_USER: beauty
+      POSTGRES_PASSWORD: beauty
+    volumes:
+      - beauty-pg-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beauty"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: beauty-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  adminer:
+    image: adminer
+    container_name: beauty-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+
+  # TODO: Enable after API is ready
+  # api:
+  #   build:
+  #     context: ../
+  #     dockerfile: apps/api/Dockerfile
+  #   container_name: beauty-api
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   environment:
+  #     - DATABASE_URL=postgresql://beauty:beauty@postgres:5432/beauty
+  #     - REDIS_URL=redis://redis:6379
+  #   ports:
+  #     - "4000:4000"
+
+volumes:
+  beauty-pg-data:
+
+# Usage:
+# docker compose -f docker/docker-compose.dev.yml up -d
+# docker compose -f docker/docker-compose.dev.yml down
