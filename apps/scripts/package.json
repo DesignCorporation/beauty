@@ -1,0 +1,21 @@
+{
+  "name": "@dc-beauty/scripts",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "seed": "tsx src/seed-demo.ts",
+    "migrate": "tsx src/migrate.ts",
+    "typecheck": "tsc -p . --noEmit",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@dc-beauty/config": "workspace:*",
+    "@dc-beauty/db": "workspace:*",
+    "@dc-beauty/utils": "workspace:*",
+    "tsx": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}
