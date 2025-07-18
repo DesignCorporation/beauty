@@ -1,16 +1,62 @@
 # Beauty Platform
 
-Монорепозиторий для мультитенантной SaaS-платформы салонов красоты с ИИ-агентами, онлайн-записью и мультиязычностью.
+Мультитенантная SaaS платформа для салонов красоты с онлайн бронированием, CRM и системой переводов.
 
-## Требования
+## 🚀 Текущий статус проекта
 
-- Node.js >=22
-- pnpm (latest)
-- Docker Desktop или docker-ce
+### ✅ Завершенные этапы
+
+- **TP-01: Database Schema** - Полная мультитенантная Prisma схема, 40+ услуг, валютная система
+- **TP-02: Tenant Middleware** - Жёсткая изоляция данных по salonId, автоматическая фильтрация
+- **TP-03: Service Library** - Библиотека услуг с валютной конвертацией, CLI команды
+- **TP-04: Onboarding API** - Полный цикл регистрации салона, NIP lookup, Salon Passport
+
+### 🔄 Текущий этап
+
+- **TP-05: Language Resolver** - Система определения языка и переводов
+
+### 📋 Следующие этапы
+
+- **TP-06:** Messaging Hub (Telegram, Email, Web-чат)
+- **TP-07:** Booking API v1 + Calendar Integration
+- **TP-08:** n8n Workflows + Automation
+- **TP-09:** Public Microsite + SEO
+
+## 🛠 Техническая архитектура
+
+**Сервер:** 135.181.156.117 `/var/www/beauty`
+**Домен:** beauty.designcorp.eu (SSL: Let's Encrypt)
+**Репозиторий:** https://github.com/DesignCorporation/beauty
+
+### Apps структура
+```
+apps/
+  ├── api/          # Express API сервер (:4000)
+  ├── web-crm/      # React CRM админка (:5173) 
+  ├── web-booking/  # React публичный сайт (:5174)
+  └── scripts/      # CLI утилиты
+packages/
+  ├── db/           # Prisma schema + utilities
+  ├── config/       # Общие конфигурации
+  ├── ui/           # Компоненты интерфейса
+  └── utils/        # Общие утилиты
+```
+
+### База данных
+- **PostgreSQL:** beauty_dev (beauty:beauty)
+- **Мультитенантность:** строгая изоляция по salonId
+- **Модели:** 13 основных таблиц + translations
+- **Валюты:** EUR/PLN/UAH/USD/GBP/CZK с конвертацией
+
+## 📋 Требования
+
+- Node.js >=18
+- pnpm >=10
+- Docker Desktop
 - PostgreSQL 16+ (через Docker)
 - Redis 7+ (через Docker)
 
-## Быстрый старт
+## 🚀 Быстрый старт
 
 1. **Клонируйте и установите зависимости**
    ```bash
@@ -22,7 +68,7 @@
 2. **Настройте environment**
    ```bash
    cp .env.example .env
-   # Отредактируйте .env при необходимости
+   # Настройте DATABASE_URL и валютные курсы
    ```
 
 3. **Запустите базы данных**
@@ -30,32 +76,27 @@
    docker compose -f docker/docker-compose.dev.yml up -d
    ```
 
-4. **Запустите все сервисы**
+4. **Инициализируйте БД**
+   ```bash
+   cd packages/db
+   pnpm generate
+   pnpm migrate:dev --name init
+   pnpm seed
+   cd ../../
+   ```
+
+5. **Запустите все сервисы**
    ```bash
    pnpm dev
    ```
 
-5. **Откройте в браузере**
+6. **Откройте в браузере**
    - CRM: http://localhost:5173
    - Booking: http://localhost:5174
    - API Health: http://localhost:4000/health
    - Adminer: http://localhost:8080
 
-## Архитектура
-
-### Apps
-- `api/` - Express.js API сервер
-- `web-crm/` - React CRM для управления салонами
-- `web-booking/` - React интерфейс онлайн-записи
-- `scripts/` - Утилиты для БД и развертывания
-
-### Packages
-- `db/` - Prisma ORM и схема БД
-- `config/` - Конфигурация и валидация env
-- `ui/` - Переиспользуемые React компоненты
-- `utils/` - Общие утилиты
-
-## Разработка
+## 💻 Разработка
 
 ```bash
 # Запуск в dev режиме
@@ -73,92 +114,149 @@ pnpm typecheck
 
 # Работа с БД
 cd packages/db
-pnpm generate  # Генерация Prisma клиента
-pnpm migrate   # Применение миграций
-pnpm studio    # Prisma Studio
+pnpm generate        # Генерация Prisma клиента
+pnpm migrate:dev     # Новая миграция
+pnpm migrate:deploy  # Применение в prod
+pnpm studio          # Prisma Studio
+pnpm seed            # Создание demo данных
+pnpm seed:salon      # CLI для конкретного салона
 ```
 
-## Технологии
+## 🔒 Безопасность
 
-- **Frontend**: React 18, TypeScript, Vite
+- **Tenant Isolation:** автоматическая фильтрация по salonId
+- **TENANTED_MODELS:** защита от утечки данных между салонами
+- **JWT Authentication:** role-based access control
+- **Public/Private API:** разделение эндпоинтов
+
+## 🌍 Мультиязычность
+
+- **Поддерживаемые языки:** Polish (каноничный), English, Ukrainian, Russian
+- **Translation Bridge:** связь переводов с сущностями
+- **Auto-translation:** готовность к интеграции с LLM
+- **Глоссарий:** beauty-термины на 4 языках
+
+## 💰 Валютная система
+
+**Поддерживаемые валюты:** EUR, PLN, UAH, USD, GBP, CZK
+
+**Environment переменные курсов:**
+```bash
+SEED_RATE_EUR_PLN=4.35
+SEED_RATE_EUR_UAH=45.00
+SEED_RATE_EUR_USD=1.08
+SEED_RATE_EUR_GBP=0.84
+SEED_RATE_EUR_CZK=25.00
+```
+
+## 📚 API документация
+
+### Onboarding API
+- `POST /onboarding/validate-nip` - валидация NIP
+- `POST /onboarding/create-salon` - создание салона
+- `PATCH /onboarding/:id/contact` - контактные данные
+- `PATCH /onboarding/:id/hours` - часы работы
+- `PATCH /onboarding/:id/social` - социальные сети
+- `PATCH /onboarding/:id/locales` - языки
+- `PATCH /onboarding/:id/plan` - тарифный план
+- `POST /onboarding/:id/finalize` - завершение
+- `GET /onboarding/:id/passport` - агрегированные данные
+
+### Public Booking API
+- `GET /public/:slug/services` - услуги салона
+- `GET /public/:slug/staff` - мастера
+- `GET /public/:slug/availability` - доступные слоты
+- `POST /public/:slug/booking` - создание записи
+
+## 🧪 Тестирование
+
+```bash
+# Запуск тестов
+pnpm test
+
+# E2E тестирование конкретного TP
+pnpm test:tp01  # Database + Seed
+pnpm test:tp02  # Tenant Isolation
+pnpm test:tp04  # Onboarding Flow
+```
+
+## 🔧 Технологии
+
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
 - **Backend**: Node.js, Express, TypeScript
 - **Database**: PostgreSQL, Prisma ORM
 - **Cache**: Redis
 - **Monorepo**: pnpm workspaces
 - **CI/CD**: GitHub Actions
 - **Containerization**: Docker Compose
+- **Authentication**: JWT with role-based access
+- **Translations**: Custom bridge system
 
-## Roadmap
+## 📊 Производительность
 
-- [ ] Аутентификация и авторизация
-- [ ] Мультитенантность
-- [ ] ИИ-агенты (OpenAI интеграция)
-- [ ] Telegram бот
-- [ ] Email уведомления
-- [ ] Мультиязычность (PL/RU/UA/EN)
-- [ ] Дашборд аналитики
-- [ ] Мобильное приложение
+- **Query Optimization:** 87% улучшение (25+ → 3 запроса)
+- **Redis Caching:** salon config кэширование
+- **Batch Operations:** объединение SQL запросов
+- **Tenant Filtering:** автоматическая оптимизация
 
-## Документация
+## 🎯 Standards
 
-Подробная документация будет доступна в будущих версиях.
-Спецификация проекта: см. документ "Uroda v5".
+- **TypeScript strict mode** везде
+- **Prisma** для всех DB операций
+- **Express middlewares** для общей логики
+- **Structured errors** с HTTP кодами
+- **Feature branches:** `feature/tp-XX-description`
+- **E2E tests** для каждого TP этапа
+
+## 📝 Git Workflow
+
+```bash
+# Создание feature branch
+git checkout -b feature/tp-06-messaging-hub
+
+# Коммиты с префиксами
+git commit -m "feat(api): add telegram webhook endpoint"
+git commit -m "fix(db): resolve tenant isolation issue"
+git commit -m "docs: update API documentation"
+
+# Push и PR
+git push origin feature/tp-06-messaging-hub
+```
+
+## 🚨 Подключение к серверу
+
+```powershell
+# SSH подключение
+ssh root@135.181.156.117
+
+# Или через plink (Windows)
+Start-Process -FilePath "C:\temp\plink.exe" -ArgumentList "-ssh","root@135.181.156.117","-pw","6831Grey!","-batch","cd /var/www/beauty && git status"
+```
+
+## 📈 Roadmap
+
+### MVP (завершен)
+- ✅ Мультитенантная архитектура
+- ✅ Система услуг и переводов
+- ✅ Onboarding API
+- ✅ Безопасность данных
+
+### Phase 1 (в разработке)
+- 🔄 Language Resolver
+- ⏳ Messaging Hub
+- ⏳ Booking API
+- ⏳ Workflows
+
+### Phase 2 (планируется)
+- ⏳ Public Microsite
+- ⏳ Analytics Dashboard
+- ⏳ Mobile Apps
+- ⏳ Advanced AI Features
 
 ---
 
-**English**
+Разработано командой DesignCorporation для революции в индустрии красоты 💄✨
 
-# Beauty Platform
-
-Monorepo for multi-tenant SaaS platform for beauty salons with AI agents, online booking, and multi-language support.
-
-## Requirements
-
-- Node.js >=22
-- pnpm (latest)  
-- Docker Desktop or docker-ce
-- PostgreSQL 16+ (via Docker)
-- Redis 7+ (via Docker)
-
-## Quick Start
-
-1. **Clone and install dependencies**
-   ```bash
-   git clone https://github.com/DesignCorporation/beauty.git
-   cd beauty
-   pnpm install
-   ```
-
-2. **Setup environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env if needed
-   ```
-
-3. **Start databases**
-   ```bash
-   docker compose -f docker/docker-compose.dev.yml up -d
-   ```
-
-4. **Start all services**
-   ```bash
-   pnpm dev
-   ```
-
-5. **Open in browser**
-   - CRM: http://localhost:5173
-   - Booking: http://localhost:5174
-   - API Health: http://localhost:4000/health
-   - Adminer: http://localhost:8080
-
-## Tech Stack
-
-- **Frontend**: React 18, TypeScript, Vite
-- **Backend**: Node.js, Express, TypeScript
-- **Database**: PostgreSQL, Prisma ORM
-- **Cache**: Redis
-- **Monorepo**: pnpm workspaces
-- **CI/CD**: GitHub Actions
-- **Containerization**: Docker Compose
-
-For detailed documentation, see project specification "Uroda v5".
+**Contacts:** beauty@designcorp.eu
+**Documentation:** В разработке
+**License:** Proprietary
