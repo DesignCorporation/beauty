@@ -22,3 +22,6 @@ export const slugify = (text: string): string => {
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 };
+
+// Language utilities (TP-05)
+export * from './language';
