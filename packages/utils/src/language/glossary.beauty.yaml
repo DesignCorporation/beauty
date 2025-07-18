@@ -1,0 +1,145 @@
+# Beauty industry terminology glossary for auto-translation
+# Base language: Polish (pl)
+
+# Hair services
+strzyżenie:
+  en: haircut
+  uk: стрижка
+  ru: стрижка
+
+fryzura:
+  en: hairstyle
+  uk: зачіска  
+  ru: прическа
+
+koloryzacja:
+  en: hair coloring
+  uk: фарбування волосся
+  ru: окрашивание волос
+
+pasemka:
+  en: highlights
+  uk: мелірування
+  ru: мелирование
+
+balayage:
+  en: balayage
+  uk: балаяж
+  ru: балаяж
+
+keratyna:
+  en: keratin treatment
+  uk: кератинове випрямлення
+  ru: кератиновое выпрямление
+
+# Nail services
+manicure:
+  en: manicure
+  uk: манікюр
+  ru: маникюр
+
+pedicure:
+  en: pedicure
+  uk: педикюр
+  ru: педикюр
+
+hybryda:
+  en: hybrid manicure
+  uk: гібридний манікюр
+  ru: гибридный маникюр
+
+# Brow and lash services
+brwi:
+  en: eyebrows
+  uk: брови
+  ru: брови
+
+rzęsy:
+  en: eyelashes
+  uk: вії
+  ru: ресницы
+
+regulacja:
+  en: shaping
+  uk: корекція
+  ru: коррекция
+
+henna:
+  en: henna
+  uk: хна
+  ru: хна
+
+laminacja:
+  en: lamination
+  uk: ламінування
+  ru: ламинирование
+
+lifting:
+  en: lifting
+  uk: ліфтинг
+  ru: лифтинг
+
+# Face treatments
+oczyszczanie:
+  en: facial cleansing
+  uk: очищення обличчя
+  ru: очищение лица
+
+peeling:
+  en: peeling
+  uk: пілінг
+  ru: пилинг
+
+# Waxing services
+depilacja:
+  en: hair removal
+  uk: депіляція
+  ru: депиляция
+
+wosk:
+  en: wax
+  uk: віск
+  ru: воск
+
+# Barber services
+broda:
+  en: beard
+  uk: борода
+  ru: борода
+
+golenie:
+  en: shaving
+  uk: гоління
+  ru: бритье
+
+# Spa and massage
+masaż:
+  en: massage
+  uk: масаж
+  ru: массаж
+
+# Common terms
+cena:
+  en: price
+  uk: ціна
+  ru: цена
+
+czas:
+  en: duration
+  uk: тривалість
+  ru: продолжительность
+
+minut:
+  en: minutes
+  uk: хвилин
+  ru: минут
+
+salon:
+  en: salon
+  uk: салон
+  ru: салон
+
+rezerwacja:
+  en: booking
+  uk: бронювання
+  ru: бронирование
