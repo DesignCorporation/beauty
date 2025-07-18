@@ -1,0 +1,9 @@
+Привіт, {{clientName}}! ⏰
+
+Ваш запис у {{salonName}} вже через 2 години!
+
+📍 {{appointmentTime}}
+💅 {{serviceName}}
+👤 {{staffName}}
+
+Ми готові вас прийняти! 💖
