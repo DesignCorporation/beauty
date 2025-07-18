@@ -23,4 +23,5 @@ export const slugify = (text: string): string => {
     .replace(/-+$/, '');
 };
 
+// TP-03: Currency utilities
 export * from './currency.js';
