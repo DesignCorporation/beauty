@@ -103,6 +103,7 @@ model Salon {
 
   // Relations
   socialLinks            SalonSocialLinks?
+  channels               SalonChannels? // TP-06: добавлено
   staff                  Staff[]
   clients                Client[]
   services               Service[]
@@ -129,6 +130,45 @@ model SalonSocialLinks {
   salon       Salon  @relation(fields: [salonId], references: [id], onDelete: Cascade)
 
   @@map("salon_social_links")
+}
+
+// TP-06: Новая таблица для настроек каналов сообщений
+model SalonChannels {
+  id                    String @id @default(cuid())
+  salonId               String @unique
+
+  // Telegram
+  telegramBotToken      String?
+  telegramEnabled       Boolean @default(false)
+  telegramWebhookUrl    String?
+
+  // Email SMTP
+  smtpHost              String?
+  smtpPort              Int?
+  smtpUser              String?
+  smtpPassword          String? // зашифровано
+  smtpFrom              String?
+  emailEnabled          Boolean @default(false)
+
+  // Web-chat
+  webChatEnabled        Boolean @default(true)
+  webChatDomain         String?
+  
+  // WhatsApp (для Pro+ планов)
+  whatsappToken         String?
+  whatsappPhoneId       String?
+  whatsappEnabled       Boolean @default(false)
+
+  // Rate limiting
+  rateLimitPerMinute    Int @default(10)
+
+  salon                 Salon @relation(fields: [salonId], references: [id], onDelete: Cascade)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([salonId])
+  @@map("salon_channels")
 }
 
 model Staff {
@@ -169,6 +209,10 @@ model Client {
   firstVisitAt      DateTime?
   lastVisitAt       DateTime?
 
+  // TP-06: Добавлены поля для связи с внешними системами
+  telegramChatId    String? // для связи с Telegram
+  webChatSessionId  String? // для веб-чат сессий
+
   salon             Salon       @relation(fields: [salonId], references: [id], onDelete: Cascade)
   appointments      Appointment[]
   messages          MessageLog[]
@@ -179,6 +223,7 @@ model Client {
   @@index([salonId])
   @@index([salonId, phone])
   @@index([salonId, email])
+  @@index([salonId, telegramChatId]) // TP-06
   @@map("clients")
 }
 
@@ -277,6 +322,7 @@ model TimeOff {
   @@map("time_off")
 }
 
+// TP-06: Расширена таблица message_log
 model MessageLog {
   id             String @id @default(cuid())
   salonId        String
@@ -291,6 +337,12 @@ model MessageLog {
   templateCode   String?
   status         MessageStatus @default(SENT)
 
+  // TP-06: Добавлены метаданные
+  meta           Json? // MessageMeta - chatId, messageId, sessionId, etc.
+  errorMessage   String?
+  deliveredAt    DateTime?
+  readAt         DateTime?
+
   createdAt      DateTime @default(now())
 
   salon          Salon   @relation(fields: [salonId], references: [id], onDelete: Cascade)
@@ -298,6 +350,7 @@ model MessageLog {
   staff          Staff?  @relation(fields: [staffId], references: [id], onDelete: SetNull)
 
   @@index([salonId, createdAt])
+  @@index([salonId, channel, status]) // TP-06: для статистики
   @@map("message_log")
 }
 
