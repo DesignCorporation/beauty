@@ -7,7 +7,8 @@
     "build": "pnpm -r run build",
     "lint": "pnpm -r run lint",
     "typecheck": "pnpm -r run typecheck",
-    "format": "pnpm -r run format"
+    "format": "pnpm -r run format",
+    "seed:salon": "tsx apps/scripts/src/seed-salon.ts"
   },
   "engines": {
     "node": ">=22"
@@ -20,6 +21,7 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "prettier": "^3.0.0",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "tsx": "^4.0.0"
   }
 }
