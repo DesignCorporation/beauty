@@ -22,3 +22,5 @@ export const slugify = (text: string): string => {
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 };
+
+export * from './currency.js';
