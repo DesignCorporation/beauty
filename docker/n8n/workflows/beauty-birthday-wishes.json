@@ -1,0 +1,198 @@
+{
+  "name": "Beauty Platform - Birthday Wishes Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 10 * * *"
+            }
+          ]
+        }
+      },
+      "id": "daily-birthday-trigger",
+      "name": "Daily 10AM Check",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/salons",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi"
+      },
+      "id": "get-all-salons",
+      "name": "Get All Salons",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/birthdays?salonId={{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi"
+      },
+      "id": "get-birthday-clients",
+      "name": "Get Birthday Clients",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        }
+      },
+      "id": "filter-has-birthdays",
+      "name": "Has Birthdays Today?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "clients"
+      },
+      "id": "split-birthday-clients",
+      "name": "Split Birthday Clients",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "birthdayMessage",
+              "value": "={{ $json.recommendedLocale === 'ru' ? '🎉 С Днем Рождения, ' + $json.templateData.clientName + '!' : $json.recommendedLocale === 'uk' ? '🎉 З Днем Народження, ' + $json.templateData.clientName + '!' : $json.recommendedLocale === 'en' ? '🎉 Happy Birthday, ' + $json.templateData.clientName + '!' : '🎉 Wszystkiego najlepszego w dniu urodzin, ' + $json.templateData.clientName + '!' }} {{ $json.recommendedLocale === 'ru' ? 'Желаем красоты и здоровья!' : $json.recommendedLocale === 'uk' ? 'Бажаємо краси та здоров\\'я!' : $json.recommendedLocale === 'en' ? 'Wishing you beauty and health!' : 'Życzymy piękna i zdrowia!' }} 💄✨ - {{ $json.templateData.salonName }}",
+              "type": "string"
+            },
+            {
+              "name": "channel",
+              "value": "={{ $json.phone ? 'TELEGRAM' : 'EMAIL' }}",
+              "type": "string"
+            },
+            {
+              "name": "specialOffer",
+              "value": "={{ $json.recommendedLocale === 'ru' ? 'Специальная скидка 20% в день рождения!' : $json.recommendedLocale === 'uk' ? 'Спеціальна знижка 20% в день народження!' : $json.recommendedLocale === 'en' ? 'Special 20% birthday discount!' : 'Specjalna zniżka 20% w dniu urodzin!' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "prepare-birthday-message",
+      "name": "Prepare Birthday Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/send-message",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"salonId\": \"{{ $json.salonId }}\",\n  \"clientId\": \"{{ $json.id }}\",\n  \"channel\": \"{{ $json.channel }}\",\n  \"templateCode\": \"birthday_wishes\",\n  \"templateData\": {\n    \"clientName\": \"{{ $json.templateData.clientName }}\",\n    \"salonName\": \"{{ $json.templateData.salonName }}\",\n    \"age\": {{ $json.templateData.age || 'null' }},\n    \"specialOffer\": \"{{ $json.specialOffer }}\"\n  },\n  \"locale\": \"{{ $json.recommendedLocale }}\",\n  \"text\": \"{{ $json.birthdayMessage }} {{ $json.specialOffer }}\"\n}"
+      },
+      "id": "send-birthday-wishes",
+      "name": "Send Birthday Wishes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Daily 10AM Check": {
+      "main": [
+        [
+          {
+            "node": "Get All Salons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Salons": {
+      "main": [
+        [
+          {
+            "node": "Get Birthday Clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Birthday Clients": {
+      "main": [
+        [
+          {
+            "node": "Has Birthdays Today?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Birthdays Today?": {
+      "main": [
+        [
+          {
+            "node": "Split Birthday Clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Birthday Clients": {
+      "main": [
+        [
+          {
+            "node": "Prepare Birthday Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Birthday Message": {
+      "main": [
+        [
+          {
+            "node": "Send Birthday Wishes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-07-19T14:31:00.000Z",
+  "updatedAt": "2025-07-19T14:31:00.000Z",
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["beauty-platform", "birthday", "marketing", "automation"],
+  "meta": {
+    "description": "Sends personalized birthday wishes with special offers to clients in their preferred language"
+  }
+}
