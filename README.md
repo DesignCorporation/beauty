@@ -10,17 +10,17 @@
 - **TP-02: Tenant Middleware** - Жёсткая изоляция данных по salonId, автоматическая фильтрация
 - **TP-03: Service Library** - Библиотека услуг с валютной конвертацией, CLI команды
 - **TP-04: Onboarding API** - Полный цикл регистрации салона, NIP lookup, Salon Passport
+- **TP-05: Language Resolver** - Система определения языка и переводов
+- **TP-07: Booking API v1** - Публичные эндпоинты бронирования + E2E тесты
 
 ### 🔄 Текущий этап
 
-- **TP-05: Language Resolver** - Система определения языка и переводов
+- **TP-06: Messaging Hub** - Telegram, Email, Web-чат интеграции
 
 ### 📋 Следующие этапы
 
-- **TP-06:** Messaging Hub (Telegram, Email, Web-чат)
-- **TP-07:** Booking API v1 + Calendar Integration
-- **TP-08:** n8n Workflows + Automation
-- **TP-09:** Public Microsite + SEO
+- **TP-08:** n8n Workflows + Automation (напоминания, lifecycle)
+- **TP-09:** Public Microsite + SEO (React фронтенд + виджет)
 
 ## 🛠 Техническая архитектура
 
@@ -162,23 +162,42 @@ SEED_RATE_EUR_CZK=25.00
 - `POST /onboarding/:id/finalize` - завершение
 - `GET /onboarding/:id/passport` - агрегированные данные
 
-### Public Booking API
-- `GET /public/:slug/services` - услуги салона
-- `GET /public/:slug/staff` - мастера
-- `GET /public/:slug/availability` - доступные слоты
-- `POST /public/:slug/booking` - создание записи
+### Public Booking API v1
+- `GET /public/:slug/services?locale=ru` - услуги салона (мультиязычные)
+- `GET /public/:slug/staff?lang=ru` - мастера с языковыми флагами
+- `GET /public/:slug/availability` - доступные слоты с business hours
+- `POST /public/:slug/booking` - создание записи (double-booking защита)
+- `POST /public/:slug/booking/:id/cancel` - отмена записи
+- `POST /public/:slug/booking/:id/reschedule` - перенос записи
 
 ## 🧪 Тестирование
 
 ```bash
-# Запуск тестов
+# Запуск всех тестов
 pnpm test
 
-# E2E тестирование конкретного TP
+# E2E тестирование по этапам
 pnpm test:tp01  # Database + Seed
 pnpm test:tp02  # Tenant Isolation
 pnpm test:tp04  # Onboarding Flow
+pnpm test:tp07  # Booking API (5 частей)
+
+# Конкретные E2E тесты TP-07
+cd apps/api
+pnpm test tests/e2e/services.e2e.test.ts     # Part 1
+pnpm test tests/e2e/staff.e2e.test.ts        # Part 2  
+pnpm test tests/e2e/availability.test.ts     # Part 3
+pnpm test tests/e2e/booking.test.ts          # Part 4
+pnpm test tests/e2e/integration.test.ts      # Part 5
 ```
+
+### TP-07 E2E Test Coverage
+- **25+ сценариев** полного покрытия Booking API
+- **Мультиязычность:** тесты с переключением pl/en/uk/ru
+- **Race conditions:** защита от двойного бронирования
+- **Performance:** нагрузочное тестирование и rate limiting
+- **Edge cases:** невалидные данные, бизнес-правила
+- **Real-world scenarios:** типичный день салона с 5+ клиентами
 
 ## 🔧 Технологии
 
@@ -240,18 +259,19 @@ Start-Process -FilePath "C:\temp\plink.exe" -ArgumentList "-ssh","root@135.181.1
 - ✅ Система услуг и переводов
 - ✅ Onboarding API
 - ✅ Безопасность данных
+- ✅ Language Resolver
+- ✅ Booking API v1 + E2E тесты
 
 ### Phase 1 (в разработке)
-- 🔄 Language Resolver
-- ⏳ Messaging Hub
-- ⏳ Booking API
-- ⏳ Workflows
+- 🔄 Messaging Hub (TP-06)
+- ⏳ n8n Workflows (TP-08)
+- ⏳ Public Microsite (TP-09)
 
 ### Phase 2 (планируется)
-- ⏳ Public Microsite
 - ⏳ Analytics Dashboard
 - ⏳ Mobile Apps
 - ⏳ Advanced AI Features
+- ⏳ Multi-salon Management
 
 ---
 
