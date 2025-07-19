@@ -1,0 +1,251 @@
+{
+  "name": "Beauty Platform - 24h Reminder Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-24h-trigger",
+      "name": "Daily 7AM Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/salons",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi",
+        "options": {}
+      },
+      "id": "get-all-salons",
+      "name": "Get All Salons",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/appointments?between=24h&salonId={{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi",
+        "options": {}
+      },
+      "id": "get-24h-appointments",
+      "name": "Get 24h Appointments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-has-appointments",
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-has-appointments",
+      "name": "Has Appointments?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "appointments",
+        "options": {}
+      },
+      "id": "split-appointments",
+      "name": "Split Appointments",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-has-contact",
+              "leftValue": "={{ $json.client.phone || $json.client.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-has-contact",
+      "name": "Has Contact Info?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "channel-assignment",
+              "name": "channel",
+              "value": "={{ $json.client.phone ? 'TELEGRAM' : 'EMAIL' }}",
+              "type": "string"
+            },
+            {
+              "id": "message-text",
+              "name": "messageText",
+              "value": "Przypomnienie: Masz wizytę jutro o {{ $json.templateData.appointmentTime }} na {{ $json.templateData.services }}. Pozdrawiamy, {{ $json.templateData.salonName }}!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "prepare-message-data",
+      "name": "Prepare Message Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/send-message",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"salonId\": \"{{ $json.salonId }}\",\n  \"clientId\": \"{{ $json.client.id }}\",\n  \"channel\": \"{{ $json.channel }}\",\n  \"templateCode\": \"reminder_24h\",\n  \"templateData\": {{ JSON.stringify($json.templateData) }},\n  \"locale\": \"{{ $json.recommendedLocale }}\",\n  \"text\": \"{{ $json.messageText }}\"\n}",
+        "options": {}
+      },
+      "id": "send-reminder-message",
+      "name": "Send Reminder Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1780, 300]
+    }
+  ],
+  "connections": {
+    "Daily 7AM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get All Salons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Salons": {
+      "main": [
+        [
+          {
+            "node": "Get 24h Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get 24h Appointments": {
+      "main": [
+        [
+          {
+            "node": "Has Appointments?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Appointments?": {
+      "main": [
+        [
+          {
+            "node": "Split Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Appointments": {
+      "main": [
+        [
+          {
+            "node": "Has Contact Info?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Contact Info?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Message Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Message Data": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-07-19T14:30:00.000Z",
+  "updatedAt": "2025-07-19T14:30:00.000Z",
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["beauty-platform", "reminders", "automation"],
+  "triggerCount": 1,
+  "meta": {
+    "description": "Sends 24-hour appointment reminders to clients via Telegram or Email",
+    "templateCredsSetupCompleted": false
+  }
+}
