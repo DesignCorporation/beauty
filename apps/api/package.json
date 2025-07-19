@@ -9,7 +9,12 @@
     "start": "node dist/index.js",
     "typecheck": "tsc -p . --noEmit",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:e2e": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@dc-beauty/config": "workspace:*",
@@ -23,6 +28,10 @@
   "devDependencies": {
     "@types/express": "^4.17.0",
     "@types/cors": "^2.8.0",
+    "@types/supertest": "^6.0.2",
+    "supertest": "^6.3.4",
+    "vitest": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0",
     "tsx": "^4.0.0",
     "typescript": "^5.5.0"
   }
