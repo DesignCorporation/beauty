@@ -13,10 +13,10 @@
 - **TP-05: Language Resolver** - Система определения языка и переводов
 - **TP-06: Messaging Hub** - Telegram, Email, Web-чат интеграции (PR #3)
 - **TP-07: Booking API v1** - Публичные эндпоинты бронирования + E2E тесты
+- **TP-08: n8n Workflows** - Автоматизация lifecycle коммуникаций (24h/2h reminders, birthday, winback)
 
 ### 🔄 Следующие этапы
 
-- **TP-08:** n8n Workflows + Automation (напоминания, lifecycle)
 - **TP-09:** Public Microsite + SEO (React фронтенд + виджет)
 
 ## 🛠 Техническая архитектура
@@ -37,6 +37,8 @@ packages/
   ├── config/       # Общие конфигурации
   ├── ui/           # Компоненты интерфейса
   └── utils/        # Общие утилиты
+docker/
+  └── n8n/          # n8n workflow automation (:5678)
 ```
 
 ### База данных
@@ -52,6 +54,7 @@ packages/
 - Docker Desktop
 - PostgreSQL 16+ (через Docker)
 - Redis 7+ (через Docker)
+- n8n (через Docker)
 
 ## 🚀 Быстрый старт
 
@@ -68,7 +71,7 @@ packages/
    # Настройте DATABASE_URL и валютные курсы
    ```
 
-3. **Запустите базы данных**
+3. **Запустите базы данных и n8n**
    ```bash
    docker compose -f docker/docker-compose.dev.yml up -d
    ```
@@ -91,6 +94,7 @@ packages/
    - CRM: http://localhost:5173
    - Booking: http://localhost:5174
    - API Health: http://localhost:4000/health
+   - n8n Dashboard: http://localhost:5678
    - Adminer: http://localhost:8080
 
 ## 💻 Разработка
@@ -146,6 +150,31 @@ SEED_RATE_EUR_GBP=0.84
 SEED_RATE_EUR_CZK=25.00
 ```
 
+## 🤖 n8n Automation (TP-08)
+
+### Workflow Templates
+- **24h Reminder**: Daily 07:00 UTC → appointment reminders
+- **2h Urgent Reminder**: Every 30min → urgent notifications
+- **Birthday Wishes**: Daily 09:00 UTC → birthday greetings
+- **Winback 90d**: Weekly Mon 10:00 UTC → client retention
+
+### n8n Dashboard
+```
+URL: http://localhost:5678
+User: admin@beauty.designcorp.eu
+Pass: BeautyN8N2025!
+```
+
+### Internal API для n8n
+```bash
+GET /internal/appointments/24h      # Завтрашние записи
+GET /internal/appointments/2h       # Записи через 2 часа
+GET /internal/clients/birthday      # Дни рождения сегодня
+GET /internal/clients/winback       # Клиенты для возврата (90+ дней)
+POST /internal/messaging/send       # Отправка сообщения
+POST /internal/messaging/send-bulk  # Массовая отправка
+```
+
 ## 📚 API документация
 
 ### Onboarding API
@@ -188,19 +217,22 @@ pnpm test:tp02  # Tenant Isolation
 pnpm test:tp04  # Onboarding Flow
 pnpm test:tp06  # Messaging Hub
 pnpm test:tp07  # Booking API (5 частей)
+pnpm test:tp08  # n8n Workflows
 
-# Конкретные E2E тесты TP-07
+# Конкретные E2E тесты
 cd apps/api
-pnpm test tests/e2e/services.e2e.test.ts     # Part 1
-pnpm test tests/e2e/staff.e2e.test.ts        # Part 2  
-pnpm test tests/e2e/availability.test.ts     # Part 3
-pnpm test tests/e2e/booking.test.ts          # Part 4
-pnpm test tests/e2e/integration.test.ts      # Part 5
+pnpm test tests/e2e/services.e2e.test.ts      # TP-07 Part 1
+pnpm test tests/e2e/staff.e2e.test.ts         # TP-07 Part 2  
+pnpm test tests/e2e/availability.test.ts      # TP-07 Part 3
+pnpm test tests/e2e/booking.test.ts           # TP-07 Part 4
+pnpm test tests/e2e/integration.test.ts       # TP-07 Part 5
+pnpm test tests/e2e/n8n-workflows.test.ts     # TP-08 Workflows
 ```
 
 ### Comprehensive Test Coverage
 - **TP-06 Messaging**: 95%+ coverage, 20+ scenarios, multi-channel testing
 - **TP-07 Booking**: 25+ сценариев полного покрытия API
+- **TP-08 n8n Workflows**: 25+ scenarios, security & automation testing
 - **Мультиязычность:** тесты с переключением pl/en/uk/ru
 - **Race conditions:** защита от двойного бронирования
 - **Performance:** нагрузочное тестирование и rate limiting
@@ -228,6 +260,7 @@ pnpm test tests/e2e/integration.test.ts      # Part 5
 - **Database**: PostgreSQL, Prisma ORM
 - **Cache**: Redis
 - **Real-time**: Socket.io
+- **Automation**: n8n workflows
 - **Monorepo**: pnpm workspaces
 - **CI/CD**: GitHub Actions
 - **Containerization**: Docker Compose
@@ -241,6 +274,7 @@ pnpm test tests/e2e/integration.test.ts      # Part 5
 - **Batch Operations:** объединение SQL запросов
 - **Tenant Filtering:** автоматическая оптимизация
 - **Message Processing:** Async delivery с retry logic
+- **n8n Workflows:** 500 executions/hour per workflow
 
 ## 🎯 Standards
 
@@ -255,15 +289,15 @@ pnpm test tests/e2e/integration.test.ts      # Part 5
 
 ```bash
 # Создание feature branch
-git checkout -b feature/tp-08-n8n-workflows
+git checkout -b feature/tp-09-public-microsite
 
 # Коммиты с префиксами
-git commit -m "feat(api): add n8n webhook endpoints"
+git commit -m "feat(api): add public microsite endpoints"
 git commit -m "fix(db): resolve tenant isolation issue"
 git commit -m "docs: update API documentation"
 
 # Push и PR
-git push origin feature/tp-08-n8n-workflows
+git push origin feature/tp-09-public-microsite
 ```
 
 ## 🚨 Подключение к серверу
@@ -286,9 +320,9 @@ Start-Process -FilePath "C:\temp\plink.exe" -ArgumentList "-ssh","root@135.181.1
 - ✅ Language Resolver
 - ✅ Messaging Hub (Telegram + Email + WebChat)
 - ✅ Booking API v1 + E2E тесты
+- ✅ n8n Workflows (24h/2h reminders, birthday, winback)
 
 ### Phase 1 (в разработке)
-- ⏳ n8n Workflows (TP-08)
 - ⏳ Public Microsite (TP-09)
 
 ### Phase 2 (планируется)
