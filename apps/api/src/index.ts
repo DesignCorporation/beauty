@@ -1,26 +1,27 @@
-import { env } from '@dc-beauty/config';
+import { startServer } from './server';
 import { logger } from '@dc-beauty/utils';
-import { createServer } from './server.js';
 
 async function main() {
   try {
-    // Optional: Test DB connection
-    if (env.TEST_DB_CONNECTION) {
-      const { prisma } = await import('@dc-beauty/db');
-      await prisma.$connect();
-      logger.info('Database connected successfully');
-    }
-
-    const server = createServer();
-    
-    server.listen(env.PORT, () => {
-      logger.info(`🚀 API server running on port ${env.PORT}`);
-      logger.info(`Environment: ${env.NODE_ENV}`);
-    });
+    await startServer();
   } catch (error) {
     logger.error('Failed to start server:', error);
     process.exit(1);
   }
 }
 
-main();
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received, shutting down gracefully');
+  process.exit(0);
+});
+
+main().catch((error) => {
+  logger.error('Unhandled error:', error);
+  process.exit(1);
+});
