@@ -10,7 +10,8 @@ import { resolveLanguage } from './middleware/resolveLanguage';
 // Route imports
 import servicesRouter from './routes/services';
 import tenantExampleRouter from './routes/tenantExample';
-import publicBookingRouter from './routes/publicBooking';
+import publicBookingRouter from './routes/publicBooking'; // Legacy - to be replaced
+import publicRoutesV1 from './routes/public'; // TP-07: New public booking API
 
 export const createServer = () => {
   const app = express();
@@ -47,7 +48,7 @@ export const createServer = () => {
       ok: true, 
       timestamp: new Date().toISOString(),
       version: '0.1.0',
-      features: ['TP-01', 'TP-02', 'TP-03', 'TP-04', 'TP-05']
+      features: ['TP-01', 'TP-02', 'TP-03', 'TP-04', 'TP-05', 'TP-06', 'TP-07']
     });
   });
 
@@ -61,6 +62,15 @@ export const createServer = () => {
         services: '/api/v1/services',
         public: '/public/:slug/*',
         examples: '/api/v1/examples'
+      },
+      features: {
+        'TP-01': 'Database Schema & Multi-tenancy',
+        'TP-02': 'Tenant Middleware & Security',
+        'TP-03': 'Service Library & Currency Support',
+        'TP-04': 'Onboarding API & Salon Passport',
+        'TP-05': 'Language Resolver & Translation Bridge',
+        'TP-06': 'Messaging Hub (Telegram, Email, Rate Limiting)',
+        'TP-07': 'Booking API v1 (Public scheduling system)'
       }
     });
   });
@@ -69,14 +79,18 @@ export const createServer = () => {
   app.use('/api/v1/services', servicesRouter);
   app.use('/api/v1/examples', tenantExampleRouter);
 
-  // Public routes (tenant resolved by slug)
-  app.use('/public', publicBookingRouter);
+  // Public routes (TP-07: Enhanced booking system)
+  app.use('/public', publicRoutesV1);
+  
+  // Legacy public routes (backward compatibility - will be deprecated)
+  app.use('/public-legacy', publicBookingRouter);
 
   // 404 handler
   app.use((_req, res) => {
     res.status(404).json({ 
       error: 'Endpoint not found',
-      hint: 'Check /health for available endpoints'
+      hint: 'Check /health for available endpoints',
+      documentation: 'https://github.com/DesignCorporation/beauty'
     });
   });
 
@@ -87,7 +101,8 @@ export const createServer = () => {
       stack: err.stack,
       path: req.path,
       method: req.method,
-      tenant: req.tenant?.salonId
+      tenant: req.tenant?.salonId,
+      publicTenant: req.publicTenant?.salonId
     });
 
     res.status(500).json({ 
