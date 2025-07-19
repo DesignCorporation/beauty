@@ -1,0 +1,193 @@
+{
+  "name": "Beauty Platform - 2h Reminder Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/30 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-2h-trigger",
+      "name": "Every 30 Minutes",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/salons",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi"
+      },
+      "id": "get-all-salons",
+      "name": "Get All Salons",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/appointments?between=2h&salonId={{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi"
+      },
+      "id": "get-2h-appointments",
+      "name": "Get 2h Appointments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        }
+      },
+      "id": "filter-has-appointments",
+      "name": "Has Appointments?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "appointments"
+      },
+      "id": "split-appointments",
+      "name": "Split Appointments",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "messageText",
+              "value": "{{ $json.recommendedLocale === 'ru' ? 'Напоминание: У вас запись через 2 часа' : $json.recommendedLocale === 'uk' ? 'Нагадування: У вас запис через 2 години' : $json.recommendedLocale === 'en' ? 'Reminder: Your appointment is in 2 hours' : 'Przypomnienie: Twoja wizyta za 2 godziny' }} {{ $json.templateData.appointmentTime }} ({{ $json.templateData.services }}). {{ $json.templateData.salonName }}",
+              "type": "string"
+            },
+            {
+              "name": "channel",
+              "value": "={{ $json.client.phone ? 'TELEGRAM' : 'EMAIL' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "prepare-urgent-message",
+      "name": "Prepare Urgent Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BEAUTY_API_URL }}/internal/send-message",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "beautyPlatformApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"salonId\": \"{{ $json.salonId }}\",\n  \"clientId\": \"{{ $json.client.id }}\",\n  \"channel\": \"{{ $json.channel }}\",\n  \"templateCode\": \"reminder_2h\",\n  \"templateData\": {{ JSON.stringify($json.templateData) }},\n  \"locale\": \"{{ $json.recommendedLocale }}\",\n  \"text\": \"{{ $json.messageText }}\"\n}"
+      },
+      "id": "send-urgent-reminder",
+      "name": "Send Urgent Reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Every 30 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get All Salons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Salons": {
+      "main": [
+        [
+          {
+            "node": "Get 2h Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get 2h Appointments": {
+      "main": [
+        [
+          {
+            "node": "Has Appointments?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Appointments?": {
+      "main": [
+        [
+          {
+            "node": "Split Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Appointments": {
+      "main": [
+        [
+          {
+            "node": "Prepare Urgent Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Urgent Message": {
+      "main": [
+        [
+          {
+            "node": "Send Urgent Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-07-19T14:30:00.000Z",
+  "updatedAt": "2025-07-19T14:30:00.000Z",
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": ["beauty-platform", "urgent-reminders", "automation"],
+  "meta": {
+    "description": "Sends urgent 2-hour appointment reminders with multi-language support"
+  }
+}
