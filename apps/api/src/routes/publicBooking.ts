@@ -1,8 +1,11 @@
-// TP-02 T8: Public Booking Router with slug-based tenant resolution
+// TP-07: Enhanced Public Booking API with calendar integration and notifications
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { getSalonConfigBySlug } from '../lib/salonConfig';
 import { createTenantPrisma } from '../lib/tenantPrisma';
+import { BusinessHoursService } from '../services/BusinessHoursService';
+import { BookingService } from '../services/BookingService';
+import { NotificationService } from '../services/NotificationService';
 
 const router = Router();
 
@@ -139,9 +142,15 @@ router.get('/:slug/staff', resolveSlugTenant, async (req: Request, res: Response
       orderBy: { name: 'asc' }
     });
 
+    // Add language compatibility flag
+    const staffWithLanguageInfo = staff.map(member => ({
+      ...member,
+      speaksClientLang: lang ? member.spokenLocales.includes(lang) : true
+    }));
+
     res.json({
       success: true,
-      data: staff,
+      data: staffWithLanguageInfo,
       meta: {
         salonSlug: req.tenant?.salonSlug,
         languageFilter: lang,
@@ -158,15 +167,96 @@ router.get('/:slug/staff', resolveSlugTenant, async (req: Request, res: Response
 });
 
 /**
+ * GET /public/:slug/availability
+ * Enhanced availability check with business hours integration
+ */
+router.get('/:slug/availability', resolveSlugTenant, async (req: Request, res: Response) => {
+  try {
+    const { serviceCode, serviceCodes, date, staffId } = req.query;
+    const bufferMin = parseInt(process.env.BOOKING_BUFFER_MIN || '5');
+
+    if ((!serviceCode && !serviceCodes) || !date) {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'serviceCode (or serviceCodes) and date are required'
+      });
+    }
+
+    const prisma = createTenantPrisma(req.tenant?.salonId);
+    const codes = serviceCodes ? 
+      (serviceCodes as string).split(',') : 
+      [serviceCode as string];
+
+    // Get services and calculate total duration
+    const services = await prisma.service.findMany({
+      where: { 
+        code: { in: codes },
+        active: true
+      }
+    });
+
+    if (services.length !== codes.length) {
+      return res.status(404).json({
+        error: 'SERVICE_NOT_FOUND',
+        message: 'One or more services not found'
+      });
+    }
+
+    const totalDuration = services.reduce((sum, service) => sum + service.durationMin, 0);
+    const requestDate = new Date(date as string);
+
+    // Get available slots using BusinessHoursService
+    let availableSlots: string[];
+    
+    if (staffId) {
+      availableSlots = await BusinessHoursService.getFilteredAvailableSlots(
+        req.tenant!.salonId,
+        requestDate,
+        totalDuration,
+        staffId as string,
+        bufferMin
+      );
+    } else {
+      availableSlots = await BusinessHoursService.getAvailableSlots(
+        req.tenant!.salonId,
+        requestDate,
+        totalDuration,
+        bufferMin
+      );
+    }
+
+    res.json({
+      success: true,
+      data: {
+        date: date as string,
+        serviceCodes: codes,
+        totalDuration,
+        availableSlots,
+        bufferMinutes: bufferMin
+      },
+      meta: {
+        salonSlug: req.tenant?.salonSlug,
+        staffId: staffId as string,
+        total: availableSlots.length
+      }
+    });
+  } catch (error) {
+    console.error('Error checking availability:', error);
+    res.status(500).json({
+      error: 'INTERNAL_ERROR',
+      message: 'Failed to check availability'
+    });
+  }
+});
+
+/**
  * POST /public/:slug/appointments
- * Create appointment for public booking
+ * Enhanced appointment creation with BookingService
  */
 router.post('/:slug/appointments', resolveSlugTenant, async (req: Request, res: Response) => {
   try {
-    const prisma = createTenantPrisma(req.tenant?.salonId);
     const { 
       client, 
-      serviceCode, 
       serviceCodes,
       staffId, 
       date, 
@@ -175,109 +265,76 @@ router.post('/:slug/appointments', resolveSlugTenant, async (req: Request, res: 
     } = req.body;
 
     // Validate required fields
-    if (!client?.name || !client?.phone || !date || !time) {
+    if (!client?.name || !client?.phone || !date || !time || !serviceCodes?.length) {
       return res.status(400).json({
         error: 'VALIDATION_ERROR',
-        message: 'Missing required fields: client.name, client.phone, date, time'
+        message: 'Missing required fields: client.name, client.phone, date, time, serviceCodes'
       });
     }
 
-    if (!serviceCode && !serviceCodes?.length) {
-      return res.status(400).json({
-        error: 'VALIDATION_ERROR',
-        message: 'At least one service must be specified'
-      });
-    }
-
-    // Resolve services by code
-    const codes = serviceCodes || [serviceCode];
-    const services = await prisma.service.findMany({
-      where: {
-        code: { in: codes },
-        active: true
-      }
-    });
-
-    if (services.length !== codes.length) {
-      return res.status(400).json({
-        error: 'VALIDATION_ERROR',
-        message: 'One or more service codes are invalid'
-      });
-    }
-
-    // Calculate total duration
-    const totalDuration = services.reduce((sum, service) => sum + service.durationMin, 0);
+    // Parse date and time
     const startAt = new Date(`${date}T${time}`);
-    const endAt = new Date(startAt.getTime() + totalDuration * 60000);
 
-    // Check if staff speaks client's preferred language
-    let languageWarning = false;
-    if (staffId && client.preferredLocale) {
-      const staff = await prisma.staff.findUnique({
-        where: { id: staffId },
-        select: { spokenLocales: true }
-      });
-      
-      if (staff && !staff.spokenLocales.includes(client.preferredLocale)) {
-        languageWarning = true;
-      }
-    }
-
-    // Find or create client
-    let existingClient = null;
-    if (client.phone) {
-      existingClient = await prisma.client.findFirst({
-        where: { phone: client.phone }
-      });
-    }
-
-    const clientData = existingClient || await prisma.client.create({
-      data: {
+    // Create booking request
+    const bookingRequest = {
+      salonId: req.tenant!.salonId,
+      client: {
         name: client.name,
         phone: client.phone,
         email: client.email,
-        preferredLocale: client.preferredLocale || req.tenant?.locales?.primary,
-        alternateLocales: client.alternateLocales || []
+        preferredLocale: client.preferredLocale || req.tenant?.locales?.primary
+      },
+      serviceCodes,
+      staffId,
+      startAt,
+      notes
+    };
+
+    // Use BookingService for enhanced validation and double-booking protection
+    const result = await BookingService.createBooking(bookingRequest);
+
+    if (!result.success) {
+      return res.status(400).json({
+        error: 'BOOKING_FAILED',
+        message: 'Failed to create booking',
+        errors: result.errors,
+        warnings: result.warnings
+      });
+    }
+
+    // Get salon info for notifications
+    const prisma = createTenantPrisma(req.tenant!.salonId);
+    const salon = await prisma.salon.findUnique({
+      where: { id: req.tenant!.salonId },
+      select: {
+        displayName: true,
+        phone: true,
+        addressStreet: true,
+        addressCity: true
       }
     });
 
-    // Create appointment
-    const appointment = await prisma.appointment.create({
-      data: {
-        clientId: clientData.id,
-        staffId,
-        startAt,
-        endAt,
-        notes,
-        status: 'PENDING',
-        services: {
-          create: services.map(service => ({
-            serviceId: service.id
-          }))
-        }
-      },
-      include: {
-        client: true,
-        staff: true,
-        services: {
-          include: {
-            service: true
-          }
-        }
+    // Send booking confirmation notification
+    if (salon && result.appointment) {
+      try {
+        const notificationData = NotificationService.createNotificationData(
+          result.appointment,
+          salon
+        );
+        await NotificationService.sendBookingConfirmation(notificationData);
+      } catch (notificationError) {
+        console.error('Failed to send booking confirmation:', notificationError);
+        // Don't fail the booking if notification fails
       }
-    });
+    }
 
     res.status(201).json({
       success: true,
-      data: appointment,
-      warnings: languageWarning ? [{
-        type: 'LANGUAGE_MISMATCH',
-        message: 'Selected staff may not speak client\'s preferred language'
-      }] : [],
+      data: result.appointment,
+      warnings: result.warnings || [],
       meta: {
         salonSlug: req.tenant?.salonSlug,
-        totalDuration,
-        calculatedEndTime: endAt.toISOString()
+        notificationSent: !!salon
       }
     });
   } catch (error) {
@@ -290,104 +347,180 @@ router.post('/:slug/appointments', resolveSlugTenant, async (req: Request, res: 
 });
 
 /**
- * GET /public/:slug/availability
- * Check availability for booking
+ * DELETE /public/:slug/booking/:id/cancel
+ * Cancel existing booking with client verification
  */
-router.get('/:slug/availability', resolveSlugTenant, async (req: Request, res: Response) => {
+router.delete('/:slug/booking/:id/cancel', resolveSlugTenant, async (req: Request, res: Response) => {
   try {
-    const prisma = createTenantPrisma(req.tenant?.salonId);
-    const { serviceCode, date, staffId } = req.query;
+    const { id } = req.params;
+    const { clientPhone, reason } = req.body;
 
-    if (!serviceCode || !date) {
+    if (!clientPhone) {
       return res.status(400).json({
         error: 'VALIDATION_ERROR',
-        message: 'serviceCode and date are required'
+        message: 'clientPhone is required for verification'
       });
     }
 
-    // Get service details
-    const service = await prisma.service.findFirst({
-      where: { 
-        code: serviceCode as string,
-        active: true
-      }
-    });
+    // Use BookingService for cancellation
+    const result = await BookingService.cancelBooking(
+      req.tenant!.salonId,
+      id,
+      clientPhone,
+      reason
+    );
 
-    if (!service) {
-      return res.status(404).json({
-        error: 'SERVICE_NOT_FOUND',
-        message: 'Service not found'
+    if (!result.success) {
+      return res.status(400).json({
+        error: 'CANCELLATION_FAILED',
+        message: 'Failed to cancel booking',
+        errors: result.errors
       });
     }
 
-    // Get existing appointments for the date
-    const startOfDay = new Date(date as string);
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(endOfDay.getDate() + 1);
-
-    const whereClause: any = {
-      startAt: {
-        gte: startOfDay,
-        lt: endOfDay
-      },
-      status: {
-        in: ['PENDING', 'CONFIRMED']
-      }
-    };
-
-    if (staffId) {
-      whereClause.staffId = staffId;
-    }
-
-    const existingAppointments = await prisma.appointment.findMany({
-      where: whereClause,
+    // Get salon info for notifications
+    const prisma = createTenantPrisma(req.tenant!.salonId);
+    const salon = await prisma.salon.findUnique({
+      where: { id: req.tenant!.salonId },
       select: {
-        startAt: true,
-        endAt: true,
-        staffId: true
-      },
-      orderBy: { startAt: 'asc' }
+        displayName: true,
+        phone: true,
+        addressStreet: true,
+        addressCity: true
+      }
     });
 
-    // Simple availability calculation (mock for now)
-    // In production, this would consider business hours, breaks, etc.
-    const availableSlots = [
-      '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-      '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-      '15:00', '15:30', '16:00', '16:30', '17:00'
-    ].filter(time => {
-      // Filter out slots that conflict with existing appointments
-      const slotStart = new Date(`${date}T${time}`);
-      const slotEnd = new Date(slotStart.getTime() + service.durationMin * 60000);
-      
-      return !existingAppointments.some(apt => {
-        const aptStart = new Date(apt.startAt);
-        const aptEnd = new Date(apt.endAt);
-        
-        // Check for overlap
-        return (slotStart < aptEnd && slotEnd > aptStart);
-      });
-    });
+    // Send cancellation notification
+    if (salon && result.appointment) {
+      try {
+        const notificationData = NotificationService.createNotificationData(
+          result.appointment,
+          salon
+        );
+        await NotificationService.sendBookingCancellation(notificationData, reason);
+      } catch (notificationError) {
+        console.error('Failed to send cancellation notification:', notificationError);
+      }
+    }
 
     res.json({
       success: true,
-      data: {
-        date,
-        serviceCode,
-        serviceDuration: service.durationMin,
-        availableSlots,
-        existingAppointments: existingAppointments.length
-      },
+      data: result.appointment,
+      warnings: result.warnings || [],
       meta: {
         salonSlug: req.tenant?.salonSlug,
-        staffId
+        notificationSent: !!salon
       }
     });
   } catch (error) {
-    console.error('Error checking availability:', error);
+    console.error('Error cancelling booking:', error);
     res.status(500).json({
       error: 'INTERNAL_ERROR',
-      message: 'Failed to check availability'
+      message: 'Failed to cancel booking'
+    });
+  }
+});
+
+/**
+ * PUT /public/:slug/booking/:id/reschedule
+ * Reschedule existing booking with client verification
+ */
+router.put('/:slug/booking/:id/reschedule', resolveSlugTenant, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { clientPhone, date, time, staffId } = req.body;
+
+    if (!clientPhone || !date || !time) {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'clientPhone, date, and time are required'
+      });
+    }
+
+    // Parse new date and time
+    const newStartAt = new Date(`${date}T${time}`);
+
+    // Get original appointment for notification comparison
+    const prisma = createTenantPrisma(req.tenant!.salonId);
+    const originalAppointment = await prisma.appointment.findFirst({
+      where: {
+        id,
+        client: { phone: clientPhone }
+      },
+      select: {
+        startAt: true
+      }
+    });
+
+    if (!originalAppointment) {
+      return res.status(404).json({
+        error: 'APPOINTMENT_NOT_FOUND',
+        message: 'Appointment not found'
+      });
+    }
+
+    // Use BookingService for rescheduling
+    const result = await BookingService.rescheduleBooking(
+      req.tenant!.salonId,
+      id,
+      clientPhone,
+      newStartAt,
+      staffId
+    );
+
+    if (!result.success) {
+      return res.status(400).json({
+        error: 'RESCHEDULE_FAILED',
+        message: 'Failed to reschedule booking',
+        errors: result.errors
+      });
+    }
+
+    // Get salon info for notifications
+    const salon = await prisma.salon.findUnique({
+      where: { id: req.tenant!.salonId },
+      select: {
+        displayName: true,
+        phone: true,
+        addressStreet: true,
+        addressCity: true
+      }
+    });
+
+    // Send reschedule notification
+    if (salon && result.appointment) {
+      try {
+        const notificationData = NotificationService.createNotificationData(
+          result.appointment,
+          salon
+        );
+        const oldDate = new Date(originalAppointment.startAt);
+        const oldTime = oldDate.toTimeString().slice(0, 5);
+        
+        await NotificationService.sendBookingReschedule(
+          notificationData,
+          oldDate,
+          oldTime
+        );
+      } catch (notificationError) {
+        console.error('Failed to send reschedule notification:', notificationError);
+      }
+    }
+
+    res.json({
+      success: true,
+      data: result.appointment,
+      warnings: result.warnings || [],
+      meta: {
+        salonSlug: req.tenant?.salonSlug,
+        notificationSent: !!salon
+      }
+    });
+  } catch (error) {
+    console.error('Error rescheduling booking:', error);
+    res.status(500).json({
+      error: 'INTERNAL_ERROR',
+      message: 'Failed to reschedule booking'
     });
   }
 });
