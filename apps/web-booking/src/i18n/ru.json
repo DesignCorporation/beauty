@@ -1,0 +1,18 @@
+{
+  "nav.services": "Услуги",
+  "nav.staff": "Наша команда",
+  "nav.contact": "Контакт",
+  "booking.select_service": "Выберите услугу",
+  "booking.select_master": "Выберите мастера",
+  "booking.your_details": "Ваши данные",
+  "booking.confirm": "Подтвердить бронирование",
+  "hero.subtitle": "Профессиональные косметические услуги",
+  "hero.book_online": "Записаться онлайн",
+  "services.title": "Наши услуги",
+  "staff.title": "Наша команда",
+  "calendar.title": "Выберите дату и время",
+  "form.name": "Полное имя",
+  "form.phone": "Номер телефона",
+  "form.email": "Email",
+  "form.language": "Предпочитаемый язык"
+}

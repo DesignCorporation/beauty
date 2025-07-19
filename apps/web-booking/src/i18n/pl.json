@@ -1,0 +1,18 @@
+{
+  "nav.services": "Usługi",
+  "nav.staff": "Nasz zespół",
+  "nav.contact": "Kontakt",
+  "booking.select_service": "Wybierz usługę",
+  "booking.select_master": "Wybierz specjalistę",
+  "booking.your_details": "Twoje dane",
+  "booking.confirm": "Potwierdź rezerwację",
+  "hero.subtitle": "Profesjonalne usługi kosmetyczne",
+  "hero.book_online": "Umów wizytę online",
+  "services.title": "Nasze usługi",
+  "staff.title": "Nasz zespół",
+  "calendar.title": "Wybierz termin",
+  "form.name": "Imię i nazwisko",
+  "form.phone": "Numer telefonu",
+  "form.email": "Email",
+  "form.language": "Preferowany język"
+}

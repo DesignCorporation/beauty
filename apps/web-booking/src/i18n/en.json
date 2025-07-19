@@ -1,0 +1,18 @@
+{
+  "nav.services": "Services",
+  "nav.staff": "Our team",
+  "nav.contact": "Contact",
+  "booking.select_service": "Select service",
+  "booking.select_master": "Choose master",
+  "booking.your_details": "Your details",
+  "booking.confirm": "Confirm booking",
+  "hero.subtitle": "Professional beauty services",
+  "hero.book_online": "Book appointment online",
+  "services.title": "Our services",
+  "staff.title": "Our team",
+  "calendar.title": "Choose date & time",
+  "form.name": "Full name",
+  "form.phone": "Phone number",
+  "form.email": "Email",
+  "form.language": "Preferred language"
+}
