@@ -11,13 +11,10 @@
 - **TP-03: Service Library** - Библиотека услуг с валютной конвертацией, CLI команды
 - **TP-04: Onboarding API** - Полный цикл регистрации салона, NIP lookup, Salon Passport
 - **TP-05: Language Resolver** - Система определения языка и переводов
+- **TP-06: Messaging Hub** - Telegram, Email, Web-чат интеграции (PR #3)
 - **TP-07: Booking API v1** - Публичные эндпоинты бронирования + E2E тесты
 
-### 🔄 Текущий этап
-
-- **TP-06: Messaging Hub** - Telegram, Email, Web-чат интеграции
-
-### 📋 Следующие этапы
+### 🔄 Следующие этапы
 
 - **TP-08:** n8n Workflows + Automation (напоминания, lifecycle)
 - **TP-09:** Public Microsite + SEO (React фронтенд + виджет)
@@ -170,6 +167,15 @@ SEED_RATE_EUR_CZK=25.00
 - `POST /public/:slug/booking/:id/cancel` - отмена записи
 - `POST /public/:slug/booking/:id/reschedule` - перенос записи
 
+### Messaging API (TP-06)
+- `POST /api/v1/messaging/send` - отправка сообщения
+- `POST /api/v1/messaging/send-bulk` - массовая отправка
+- `GET /api/v1/messaging/history` - история сообщений
+- `GET /api/v1/messaging/stats` - статистика сообщений
+- `POST /webhooks/telegram` - Telegram Bot webhook
+- `POST /webhooks/email` - Email inbound webhook
+- `WebSocket /messaging/webchat` - Real-time WebChat
+
 ## 🧪 Тестирование
 
 ```bash
@@ -180,6 +186,7 @@ pnpm test
 pnpm test:tp01  # Database + Seed
 pnpm test:tp02  # Tenant Isolation
 pnpm test:tp04  # Onboarding Flow
+pnpm test:tp06  # Messaging Hub
 pnpm test:tp07  # Booking API (5 частей)
 
 # Конкретные E2E тесты TP-07
@@ -191,13 +198,28 @@ pnpm test tests/e2e/booking.test.ts          # Part 4
 pnpm test tests/e2e/integration.test.ts      # Part 5
 ```
 
-### TP-07 E2E Test Coverage
-- **25+ сценариев** полного покрытия Booking API
+### Comprehensive Test Coverage
+- **TP-06 Messaging**: 95%+ coverage, 20+ scenarios, multi-channel testing
+- **TP-07 Booking**: 25+ сценариев полного покрытия API
 - **Мультиязычность:** тесты с переключением pl/en/uk/ru
 - **Race conditions:** защита от двойного бронирования
 - **Performance:** нагрузочное тестирование и rate limiting
 - **Edge cases:** невалидные данные, бизнес-правила
 - **Real-world scenarios:** типичный день салона с 5+ клиентами
+
+## 📱 Messaging Hub (TP-06)
+
+### Каналы связи
+- **Telegram Bot API**: Webhooks, rich formatting, автоответы
+- **Email SMTP**: HTML templates, delivery tracking
+- **WebChat Socket.io**: Real-time communication, salon rooms
+
+### Ключевые особенности
+- **Rate Limiting**: Redis token bucket (60 msg/min)
+- **Template Engine**: Мультиязычные шаблоны
+- **Bulk Operations**: Оптимизированная массовая отправка
+- **Message Logging**: Полная история с метаданными
+- **Security**: Webhook verification, tenant isolation
 
 ## 🔧 Технологии
 
@@ -205,6 +227,7 @@ pnpm test tests/e2e/integration.test.ts      # Part 5
 - **Backend**: Node.js, Express, TypeScript
 - **Database**: PostgreSQL, Prisma ORM
 - **Cache**: Redis
+- **Real-time**: Socket.io
 - **Monorepo**: pnpm workspaces
 - **CI/CD**: GitHub Actions
 - **Containerization**: Docker Compose
@@ -217,6 +240,7 @@ pnpm test tests/e2e/integration.test.ts      # Part 5
 - **Redis Caching:** salon config кэширование
 - **Batch Operations:** объединение SQL запросов
 - **Tenant Filtering:** автоматическая оптимизация
+- **Message Processing:** Async delivery с retry logic
 
 ## 🎯 Standards
 
@@ -231,15 +255,15 @@ pnpm test tests/e2e/integration.test.ts      # Part 5
 
 ```bash
 # Создание feature branch
-git checkout -b feature/tp-06-messaging-hub
+git checkout -b feature/tp-08-n8n-workflows
 
 # Коммиты с префиксами
-git commit -m "feat(api): add telegram webhook endpoint"
+git commit -m "feat(api): add n8n webhook endpoints"
 git commit -m "fix(db): resolve tenant isolation issue"
 git commit -m "docs: update API documentation"
 
 # Push и PR
-git push origin feature/tp-06-messaging-hub
+git push origin feature/tp-08-n8n-workflows
 ```
 
 ## 🚨 Подключение к серверу
@@ -260,10 +284,10 @@ Start-Process -FilePath "C:\temp\plink.exe" -ArgumentList "-ssh","root@135.181.1
 - ✅ Onboarding API
 - ✅ Безопасность данных
 - ✅ Language Resolver
+- ✅ Messaging Hub (Telegram + Email + WebChat)
 - ✅ Booking API v1 + E2E тесты
 
 ### Phase 1 (в разработке)
-- 🔄 Messaging Hub (TP-06)
 - ⏳ n8n Workflows (TP-08)
 - ⏳ Public Microsite (TP-09)
 
