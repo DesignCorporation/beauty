@@ -12,6 +12,7 @@ import servicesRouter from './routes/services';
 import tenantExampleRouter from './routes/tenantExample';
 import publicBookingRouter from './routes/publicBooking'; // Legacy - to be replaced
 import publicRoutesV1 from './routes/public'; // TP-07: New public booking API
+import n8nInternalRouter from './routes/n8nInternal'; // TP-08: n8n workflow integration
 
 export const createServer = () => {
   const app = express();
@@ -19,7 +20,7 @@ export const createServer = () => {
   // Global middleware
   app.use(cors({
     origin: process.env.NODE_ENV === 'development' 
-      ? ['http://localhost:5173', 'http://localhost:5174']
+      ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5678']
       : ['https://beauty.designcorp.eu'],
     credentials: true
   }));
@@ -39,8 +40,14 @@ export const createServer = () => {
     });
   }
 
-  // Tenant resolution (runs on all routes)
-  app.use(resolveTenant);
+  // Tenant resolution (runs on all routes except internal)
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/internal/')) {
+      // Skip tenant resolution for n8n internal endpoints
+      return next();
+    }
+    resolveTenant(req, res, next);
+  });
 
   // Health check (no tenant required)
   app.get('/health', (_req, res) => {
@@ -48,7 +55,7 @@ export const createServer = () => {
       ok: true, 
       timestamp: new Date().toISOString(),
       version: '0.1.0',
-      features: ['TP-01', 'TP-02', 'TP-03', 'TP-04', 'TP-05', 'TP-06', 'TP-07']
+      features: ['TP-01', 'TP-02', 'TP-03', 'TP-04', 'TP-05', 'TP-06', 'TP-07', 'TP-08']
     });
   });
 
@@ -61,7 +68,8 @@ export const createServer = () => {
         health: '/health',
         services: '/api/v1/services',
         public: '/public/:slug/*',
-        examples: '/api/v1/examples'
+        examples: '/api/v1/examples',
+        internal: '/internal/* (n8n workflows)'
       },
       features: {
         'TP-01': 'Database Schema & Multi-tenancy',
@@ -70,10 +78,14 @@ export const createServer = () => {
         'TP-04': 'Onboarding API & Salon Passport',
         'TP-05': 'Language Resolver & Translation Bridge',
         'TP-06': 'Messaging Hub (Telegram, Email, Rate Limiting)',
-        'TP-07': 'Booking API v1 (Public scheduling system)'
+        'TP-07': 'Booking API v1 (Public scheduling system)',
+        'TP-08': 'n8n Workflows & Automation (Reminders, Birthday, Winback)'
       }
     });
   });
+
+  // n8n Internal API routes (TP-08: No tenant middleware, uses API key auth)
+  app.use('/internal', n8nInternalRouter);
 
   // API v1 routes (private, tenant-scoped)
   app.use('/api/v1/services', servicesRouter);
