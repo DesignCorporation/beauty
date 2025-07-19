@@ -1,0 +1,272 @@
+{
+  "name": "Beauty Platform - Winback 90d",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 10 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "a51c6e33-0c21-4e57-947c-8e4a8e123456",
+      "name": "Weekly Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:4000/internal/clients/winback",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "b62d7f44-1d32-5e68-a58d-9f5b9f234567",
+      "name": "Get Winback Clients",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Beauty API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c73e8055-2e43-6f79-b69e-a0c6af345678",
+              "leftValue": "={{ $json.clients && $json.clients.length > 0 }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d84f9166-3f54-7089-c7af-b1d7b0456789",
+      "name": "Has Winback Clients?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e95fa277-4065-8199-d8b0-c2e8c1567890",
+              "name": "clients",
+              "value": "={{ $json.clients }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fa60b388-5176-920a-e9c1-d3f9d2678901",
+      "name": "Extract Clients",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [900, 220]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "clients",
+        "options": {}
+      },
+      "id": "0b71c499-6287-a31b-fad2-e4fae3789012",
+      "name": "Split Clients",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1120, 220]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:4000/internal/messaging/send",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"salonId\": \"{{ $json.salonId }}\",\n  \"clientId\": \"{{ $json.id }}\",\n  \"channel\": \"EMAIL\",\n  \"templateCode\": \"winback_90d\",\n  \"locale\": \"{{ $json.preferredLocale || 'pl' }}\",\n  \"data\": {\n    \"clientName\": \"{{ $json.name }}\",\n    \"lastVisit\": \"{{ $json.lastVisitAt }}\"\n  }\n}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "1c82d5aa-7398-b42c-0be3-f5f0f4890123",
+      "name": "Send Winback Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1340, 220],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Beauty API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "2d93e6bb-84a9-c53d-1cf4-060f05901234",
+      "name": "Combine Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ea4f7cc-95ba-d64e-2d05-171016012345",
+              "name": "summary",
+              "value": "=Winback campaign sent to {{ $json.length || 0 }} clients",
+              "type": "string"
+            },
+            {
+              "id": "4fb50ddd-a6cb-e75f-3e16-282127123456",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "50c61eee-b7dc-f860-4f27-393238234567",
+      "name": "Log Summary",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [1780, 300]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Weekly Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Winback Clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Winback Clients": {
+      "main": [
+        [
+          {
+            "node": "Has Winback Clients?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Winback Clients?": {
+      "main": [
+        [
+          {
+            "node": "Extract Clients",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Clients": {
+      "main": [
+        [
+          {
+            "node": "Split Clients",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Clients": {
+      "main": [
+        [
+          {
+            "node": "Send Winback Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Winback Message": {
+      "main": [
+        [
+          {
+            "node": "Combine Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Results": {
+      "main": [
+        [
+          {
+            "node": "Log Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "beauty-platform-dev"
+  },
+  "id": "wYXmwtlkpKBNiYPv",
+  "tags": [
+    {
+      "createdAt": "2025-07-19T14:31:29.000Z",
+      "updatedAt": "2025-07-19T14:31:29.000Z",
+      "id": "winback",
+      "name": "winback"
+    },
+    {
+      "createdAt": "2025-07-19T14:31:29.000Z", 
+      "updatedAt": "2025-07-19T14:31:29.000Z",
+      "id": "retention",
+      "name": "retention"
+    }
+  ]
+}
