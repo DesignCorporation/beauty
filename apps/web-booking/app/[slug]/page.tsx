@@ -7,6 +7,9 @@ const ServiceList = dynamic(() => import('../components/ServiceList'), {
 })
 
 export default function SalonPage({ params }: { params: { slug: string } }) {
+  const isEmbed = typeof window !== 'undefined' && 
+    new URLSearchParams(window.location.search).get('embed') === '1'
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Optimized for LCP */}
@@ -44,8 +47,8 @@ export default function SalonPage({ params }: { params: { slug: string } }) {
         </div>
       </section>
 
-      {/* Booking Widget Embed Support */}
-      {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('embed') === '1' && (
+      {/* Booking Widget Embed Support - Async Loading */}
+      {isEmbed && (
         <script
           src="/widget.js"
           async
