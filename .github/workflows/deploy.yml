@@ -18,7 +18,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
+        cache: 'pnpm'
         
     - name: Setup pnpm
       uses: pnpm/action-setup@v2
@@ -45,13 +45,15 @@ jobs:
         path: apps/web-booking/out
         
     - name: Deploy to Vercel
-      if: github.ref == 'refs/heads/main' && secrets.VERCEL_TOKEN
-      uses: vercel/action@v2
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        working-directory: apps/web-booking
+      if: github.ref == 'refs/heads/main' && vars.VERCEL_TOKEN != ''
+      env:
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      run: |
+        npm install -g vercel@latest
+        cd apps/web-booking
+        vercel deploy --prod --yes --token $VERCEL_TOKEN
 
   lighthouse:
     runs-on: ubuntu-latest
@@ -62,10 +64,23 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      
+    - name: Build for lighthouse
+      run: |
+        cd apps/web-booking
+        pnpm build
+        
     - name: Lighthouse CI
       uses: treosh/lighthouse-ci-action@v10
       with:
-        configPath: '.lighthouserc.json'
+        configPath: 'apps/web-booking/.lighthouserc.json'
         uploadArtifacts: true
         temporaryPublicStorage: true
 
