@@ -23,15 +23,16 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '22'
+        cache: 'pnpm'
         
     - name: Install dependencies
       run: pnpm install
       
     - name: Remove conflicting config files
       run: |
-        # Remove conflicting Next.js config files if they exist
-        rm -f apps/web-booking/next.config.ts
-        rm -f apps/web-booking/vite.config.ts
+        # Remove ALL conflicting Next.js/Vite config files
+        find . -name "next.config.ts" -not -path "./node_modules/*" -delete || true
+        find . -name "vite.config.ts" -path "*/web-booking/*" -delete || true
         
     - name: Build web-booking
       run: |
@@ -47,8 +48,9 @@ jobs:
         
     - name: Upload GitHub Pages artifact
       if: github.ref == 'refs/heads/main'
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
+        name: github-pages
         path: apps/web-booking/out
         
     - name: Deploy to Vercel
@@ -84,14 +86,15 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '22'
+        cache: 'pnpm'
         
     - name: Install dependencies
       run: pnpm install
       
     - name: Remove conflicting config files
       run: |
-        rm -f apps/web-booking/next.config.ts
-        rm -f apps/web-booking/vite.config.ts
+        find . -name "next.config.ts" -not -path "./node_modules/*" -delete || true
+        find . -name "vite.config.ts" -path "*/web-booking/*" -delete || true
         
     - name: Build for lighthouse
       run: |
