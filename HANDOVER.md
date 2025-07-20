@@ -1,226 +1,183 @@
-# Beauty Platform - Handover Documentation
+# Beauty Platform - Continuous Handover System
+**Last Updated:** 2025-07-20 14:40 UTC  
+**Current Phase:** CI/CD Dependencies Fix  
+**Next AI Assistant:** Start from "CURRENT STATUS" section
 
-**Дата обновления:** 2025-07-18
-**Автор:** Claude (DesignCorporation Assistant)
-**Цель:** Обеспечить непрерывность работы над проектом при смене контекста/чата
+---
 
-## 📋 Краткий статус проекта
+## 🎯 CURRENT STATUS & IMMEDIATE TASKS
 
-### ✅ Завершенные этапы (готовы к production)
+### ✅ **COMPLETED (Last 2 hours)**
+1. **Fixed package.json dependency conflicts** - Updated all ESLint/TypeScript to latest versions
+2. **Resolved pnpm install errors** - All workspace packages now have compatible dependencies  
+3. **Applied CI/CD patch** - Fixed @dc-beauty/ui, @dc-beauty/utils exports and Next.js config
 
-**TP-01: Database Schema**
-- Полная Prisma схема для мультитенантности
-- 13 основных таблиц (salons, staff, clients, services, appointments, etc.)
-- Библиотека 40+ услуг с переводами на 4 языка
-- Валютная система: EUR/PLN/UAH/USD/GBP/CZK
-- Seed данные: Demo Salon готов к тестированию
+### 🔧 **CURRENT ISSUE**
+**Problem:** GitHub Actions still failing  
+**Root Cause:** Unknown - need to check latest workflow runs  
+**Priority:** HIGH - blocking deployment
 
-**TP-02: Tenant Middleware**
-- Критическая безопасность: 100% изоляция данных между салонами
-- tenantPrisma helper с автоматической фильтрацией по salonId
-- Приоритеты источников tenant: JWT → Host → Header → Query
-- Public booking API с slug-based resolution
-- TENANTED_MODELS константа для защиты
+### 🎯 **IMMEDIATE NEXT STEPS** (for next AI assistant)
+1. **Check GitHub Actions status** - Look at latest workflow runs for new errors
+2. **Test commands locally** - Complete the interrupted command sequence:
+   ```bash
+   cd /var/www/beauty
+   pnpm typecheck  # ⚠️ Was failing with "tsc not found"
+   pnpm lint       # ⏳ Not tested yet  
+   pnpm build      # ⏳ Not tested yet
+   ```
+3. **Fix ESLint 9 config** - May need to migrate .eslintrc.cjs to eslint.config.js
+4. **Verify deployment** - Check if https://designcorporation.github.io/beauty/ works
 
-**TP-03: Service Library**
-- CLI команда: `pnpm seed:salon <nip|salonId>`
-- 8 категорий услуг: hair, nails, brows_lashes, face, wax, barber, spa, package
-- Валютная конвертация через env rates (SEED_RATE_EUR_PLN=4.35)
-- Upsert логика предотвращает дубликаты
+---
 
-**TP-04: Onboarding API**
-- 9 эндпоинтов полного цикла: validate-nip → finalize
-- NIP lookup service для Poland/Ukraine
-- Автоопределение базовой валюты по стране
-- Salon Passport - агрегированный JSON всех данных
-- E2E тестирование работает
+## 📋 PROJECT CONTEXT
 
-### 🔄 Текущий этап
+### **What is Beauty Platform?**
+- Multi-tenant SaaS for beauty salons
+- Tech: pnpm monorepo + Next.js + Express + PostgreSQL + Prisma
+- Repository: https://github.com/DesignCorporation/beauty
+- Server: 135.181.156.117 (SSH: root@135.181.156.117, pw: 6831Grey!)
 
-**TP-05: Language Resolver** (в разработке)
-- resolveLocale функция с приоритетами
-- Translation Bridge для связи переводов с сущностями
-- Глоссарий beauty-терминов на 4 языках
-- Auto-translation integration готовность
+### **Completed Phases (TP-01 to TP-04)**
+- ✅ TP-01: Database Schema (Prisma + multi-tenant)
+- ✅ TP-02: Tenant Middleware (security isolation)  
+- ✅ TP-03: Service Library (40+ beauty services)
+- ✅ TP-04: Onboarding API (NIP validation, salon creation)
 
-## 🛠 Техническая информация
+### **Current Phase: CI/CD Fix**
+**Goal:** Get GitHub Actions working + deploy to GitHub Pages  
+**URL Target:** https://designcorporation.github.io/beauty/
 
-### Серверная инфраструктура
-- **Сервер:** 135.181.156.117
-- **Проект:** `/var/www/beauty`
-- **SSH:** `ssh root@135.181.156.117` (пароль: 6831Grey!)
-- **База:** PostgreSQL beauty_dev (beauty:beauty)
-- **Домен:** beauty.designcorp.eu (SSL настроен)
+---
 
-### Структура портов
-- **API:** :4000 (Express backend)
-- **CRM:** :5173 (React админка)
-- **Booking:** :5174 (React публичный сайт)
-- **Adminer:** :8080 (БД интерфейс)
-- **PostgreSQL:** :5432
-- **Redis:** :6379
+## 🔧 TECHNICAL DETAILS
 
-### Nginx routing
-```nginx
-/api/ → :4000
-/crm/ → :5173
-/ → :5174
+### **Server Connection Commands**
+```powershell
+# SSH via Windows PowerShell
+C:\temp\plink.exe -ssh root@135.181.156.117 -pw "6831Grey!" -batch "cd /var/www/beauty && [command]"
+
+# Quick status check
+Start-Process -FilePath "C:\temp\plink.exe" -ArgumentList "-ssh","root@135.181.156.117","-pw","6831Grey!","-batch","cd /var/www/beauty && git status && pnpm --version" -Wait -NoNewWindow -RedirectStandardOutput "C:\temp\status.txt"; Get-Content "C:\temp\status.txt"
 ```
 
-## 🗂 Важные файлы и команды
-
-### Базовые команды для работы
-```bash
-# Подключение к серверу
-ssh root@135.181.156.117
-
-# Переход в проект
-cd /var/www/beauty
-
-# Обновление кода
-git pull origin main
-pnpm install
-
-# Запуск сервисов
-pnpm dev
-
-# Работа с БД
-cd packages/db
-pnpm generate
-pnpm migrate:dev
-pnpm seed
+### **Project Structure**
+```
+beauty/
+├── apps/
+│   ├── api/          # Express backend (:4000)
+│   ├── web-crm/      # React CRM (:5173)
+│   └── web-booking/  # Next.js public site (:5174)
+├── packages/
+│   ├── ui/           # React components  
+│   ├── utils/        # Shared utilities
+│   ├── config/       # Configuration
+│   └── db/           # Prisma schema
 ```
 
-### Ключевые файлы конфигурации
-- `packages/db/prisma/schema.prisma` - схема БД
-- `apps/api/src/middleware/tenant.ts` - tenant middleware
-- `packages/db/src/seed/serviceLibrary.ts` - библиотека услуг
-- `apps/api/src/routes/onboarding.ts` - onboarding API
-- `.env` - переменные окружения
+### **Recent Changes (2025-07-20)**
+1. **Updated all package.json files:**
+   - ESLint: 8.57.0 → 9.15.0
+   - @typescript-eslint/*: 6.22.0 → 8.37.0
+   - TypeScript: 5.4.0 → 5.7.2
 
-### Environment переменные
+2. **Fixed workspace imports:**
+   - Added proper exports in @dc-beauty/ui and @dc-beauty/utils
+   - Created HelloBeauty React component
+   - Added TypeScript configurations
+
+3. **Next.js configuration:**
+   - Set output: 'export' for GitHub Pages
+   - Added transpilePackages for workspace dependencies
+
+---
+
+## 🚨 KNOWN ISSUES & SOLUTIONS
+
+### **Issue 1: "tsc not found" error**
+**Problem:** TypeScript compiler not in PATH  
+**Solutions:**
 ```bash
-DATABASE_URL="postgresql://beauty:beauty@localhost:5432/beauty_dev"
-REDIS_URL="redis://localhost:6379"
-SEED_RATE_EUR_PLN=4.35
-SEED_RATE_EUR_UAH=45.00
-SEED_RATE_EUR_USD=1.08
-SEED_RATE_EUR_GBP=0.84
-SEED_RATE_EUR_CZK=25.00
+# Option A: Use npx
+npx tsc --noEmit
+
+# Option B: Use pnpm exec  
+pnpm exec tsc --noEmit
+
+# Option C: Install globally
+npm install -g typescript
 ```
 
-## 📚 Архитектурные принципы
-
-### Tenant Isolation (КРИТИЧНО!)
-- Все запросы к TENANTED_MODELS автоматически фильтруются по salonId
-- Модели с tenant isolation: Staff, Client, Service, ServiceTranslation, Appointment, etc.
-- tenantPrisma(salonId) helper обязателен для всех DB операций
-- req.tenant устанавливается в middleware
-
-### Мультиязычность
-- Таблица `translations` для всех переводов
-- Поддержка: pl (каноничный), en, uk, ru
-- ensureServiceTranslation для автосоздания переводов
-- Глоссарий beauty-терминов
-
-### Валютная система
-- salon.baseCurrency определяется по стране при онбординге
-- Каждая цена хранится с валютой (price_amount + price_currency)
-- Конвертация через env rates с fallback 1:1
-
-## 🎯 Следующие этапы (приоритеты)
-
-### TP-05: Language Resolver (ТЕКУЩИЙ)
-- Завершить resolveLocale функцию
-- Добавить Redis кэширование переводов
-- Интегрировать с API эндпоинтами
-- Unit тесты L01-L10
-
-### TP-06: Messaging Hub
-- Telegram Bot webhook
-- Email отправка через SMTP
-- Web-чат Socket.io
-- Таблица message_log
-
-### TP-07: Booking API v1
-- Публичные эндпоинты для бронирования
-- Календарная система
-- Проверка доступности слотов
-- Double-booking защита
-
-### TP-08: n8n Workflows
-- reminder_24h, reminder_2h
-- birthday, winback_90d
-- Интеграция с Messaging Hub
-
-### TP-09: Public Microsite
-- Next.js приложение
-- SEO оптимизация
-- Встраиваемый widget
-- Мультиязычный интерфейс
-
-## 🚨 Критические моменты для продолжения
-
-### Безопасность данных
-- **НИКОГДА** не используйте прямые Prisma запросы без tenant фильтрации
-- Всегда используйте `tenantPrisma(req.tenant.salonId)`
-- Проверяйте req.tenant?.salonId перед операциями
-
-### Стандарты разработки
-- TypeScript strict mode везде
-- Feature branches: `feature/tp-XX-description`
-- Коммиты с префиксами: `feat:`, `fix:`, `docs:`
-- E2E тесты для каждого TP
-
-### Тестирование
-```bash
-# Проверка tenant isolation
-pnpm test:tenant
-
-# E2E тестирование онбординга
-pnpm test:onboarding
-
-# Полный набор тестов
-pnpm test
+### **Issue 2: ESLint 9 breaking changes**
+**Problem:** .eslintrc.cjs format deprecated  
+**Solution:** May need to create eslint.config.js:
+```js
+// eslint.config.js
+export default [
+  {
+    files: ['**/*.{js,ts,tsx}'],
+    // ... config
+  }
+];
 ```
 
-## 📞 Контакты и ресурсы
+### **Issue 3: GitHub Actions environment**
+**Check these workflow files:**
+- `.github/workflows/ci.yml`
+- `.github/workflows/deploy.yml`
 
-### GitHub
-- **Репозиторий:** https://github.com/DesignCorporation/beauty
-- **Issues:** Используйте GitHub Issues для багов
-- **Документация:** README.md обновляется регулярно
+---
 
-### Команда
-- **Project Lead:** DesignCorporation
-- **Email:** beauty@designcorp.eu
-- **Assistant:** Claude (сохранено в memory для continuity)
+## 🎯 SUCCESS CRITERIA
 
-## 🔄 Инструкции для нового Assistant
+### **CI/CD Working** ✅
+- [ ] `pnpm install` passes in GitHub Actions
+- [ ] `pnpm typecheck` passes  
+- [ ] `pnpm lint` passes
+- [ ] `pnpm build` passes
+- [ ] Deploy to GitHub Pages succeeds
 
-1. **Прочитайте memory:** `read_graph` для полного контекста
-2. **Проверьте status:** `git status` и `pnpm install`
-3. **Запустите тесты:** `pnpm test` для проверки
-4. **Изучите TP-05:** фокус на Language Resolver
-5. **Обновляйте memory:** после важных изменений
+### **Live Site Working** 🌐
+- [ ] https://designcorporation.github.io/beauty/ loads
+- [ ] Shows Beauty Platform landing page
+- [ ] No console errors
+- [ ] Lighthouse score >80
 
-### Команды для быстрого старта
-```bash
-# Вход на сервер
-ssh root@135.181.156.117
+---
 
-# Статус проекта
-cd /var/www/beauty && git status && pnpm test
+## 📞 HANDOVER PROMPT FOR NEXT AI
 
-# Запуск dev окружения
-pnpm dev
+```
+I'm continuing work on Beauty Platform CI/CD fixes. Please read the HANDOVER.md file in the GitHub repository for full context.
 
-# Проверка БД
-cd packages/db && pnpm studio
+IMMEDIATE TASKS:
+1. Check latest GitHub Actions workflow runs for current errors
+2. Test these commands on server: pnpm typecheck, pnpm lint, pnpm build  
+3. Fix any ESLint 9 configuration issues
+4. Verify deployment to GitHub Pages
+
+PROJECT: Multi-tenant beauty salon SaaS
+REPO: https://github.com/DesignCorporation/beauty  
+SERVER: 135.181.156.117 (credentials in HANDOVER.md)
+CURRENT STATUS: Dependencies fixed, need to complete command testing
+
+Please start by checking the current GitHub Actions status and continue from where the previous assistant left off.
 ```
 
 ---
 
-**Важно:** Этот документ обновляется при каждом важном изменении. При работе с другим Assistant - начните с чтения memory и этого файла.
+## 🔄 UPDATE LOG
 
-**Последнее обновление:** 2025-07-18 20:15 UTC
+| Time | Assistant | Action | Status |
+|------|-----------|--------|---------|
+| 14:40 | Claude-1 | Created handover system | ✅ |
+| 14:15 | Claude-1 | Fixed ESLint/TypeScript deps | ✅ |
+| 14:00 | Claude-1 | Applied CI/CD patch | ✅ |
+| 13:30 | Claude-1 | Started dependency analysis | ✅ |
+
+**Next update:** Add results of pnpm typecheck/lint/build tests
+
+---
+
+*This file ensures smooth transition between AI assistants and prevents starting from scratch each time.*
