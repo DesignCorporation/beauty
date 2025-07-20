@@ -28,10 +28,10 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '22.x'
-        # кеш выключаем — pnpm-lock.yaml отсутствует
+        cache: 'pnpm'
         
     - name: Install deps
-      run: pnpm install --no-frozen-lockfile
+      run: pnpm install --frozen-lockfile
       
     - name: Remove conflicting config files
       run: |
