@@ -14,10 +14,35 @@
 - **TP-06: Messaging Hub** - Telegram, Email, Web-чат интеграции (PR #3)
 - **TP-07: Booking API v1** - Публичные эндпоинты бронирования + E2E тесты
 - **TP-08: n8n Workflows** - Автоматизация lifecycle коммуникаций (24h/2h reminders, birthday, winback)
+- **TP-09: Public Microsite** - Next.js фронтенд + встраиваемый виджет (Lighthouse ≥80)
 
 ### 🔄 Следующие этапы
 
-- **TP-09:** Public Microsite + SEO (React фронтенд + виджет)
+- **TP-10:** Global Admin Panel (планируется)
+
+## 🌐 Production deployment
+
+### Live URLs
+- **GitHub Pages:** https://designcorporation.github.io/beauty
+- **Vercel Preview:** https://beauty-designcorp.vercel.app
+- **Widget Demo:** https://designcorporation.github.io/beauty/demo-salon
+- **API Endpoint:** https://api.beauty.designcorp.eu
+
+### Local Production Testing
+```bash
+# Build and serve locally on production port
+cd apps/web-booking
+pnpm build
+pnpm run deploy-local
+
+# Access at http://localhost:4000
+```
+
+### Auto-Deploy Pipeline
+- ✅ **GitHub Actions:** Auto-deploy on push to main
+- ✅ **Lighthouse CI:** Mobile performance ≥80 validation
+- ✅ **Multi-target:** GitHub Pages + Vercel deployment
+- ✅ **Widget Distribution:** Automatic `/dist/widget.js` copying
 
 ## 🛠 Техническая архитектура
 
@@ -30,7 +55,7 @@
 apps/
   ├── api/          # Express API сервер (:4000)
   ├── web-crm/      # React CRM админка (:5173) 
-  ├── web-booking/  # React публичный сайт (:5174)
+  ├── web-booking/  # Next.js публичный сайт (:5174)
   └── scripts/      # CLI утилиты
 packages/
   ├── db/           # Prisma schema + utilities
@@ -321,11 +346,12 @@ Start-Process -FilePath "C:\temp\plink.exe" -ArgumentList "-ssh","root@135.181.1
 - ✅ Messaging Hub (Telegram + Email + WebChat)
 - ✅ Booking API v1 + E2E тесты
 - ✅ n8n Workflows (24h/2h reminders, birthday, winback)
+- ✅ Public Microsite + Widget (TP-09)
 
-### Phase 1 (в разработке)
-- ⏳ Public Microsite (TP-09)
+### Phase 1 (планируется)
+- ⏳ Global Admin Panel (TP-10)
 
-### Phase 2 (планируется)
+### Phase 2 (будущее)
 - ⏳ Analytics Dashboard
 - ⏳ Mobile Apps
 - ⏳ Advanced AI Features
