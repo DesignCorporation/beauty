@@ -8,6 +8,12 @@ importers:
 
   .:
     devDependencies:
+      '@eslint/eslintrc':
+        specifier: ^3.1.0
+        version: 3.1.0
+      '@eslint/js':
+        specifier: ^9.18.0
+        version: 9.18.0
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.37.0
         version: 8.37.0(@typescript-eslint/parser@8.37.0)(eslint@9.15.0)(typescript@5.7.2)
@@ -136,10 +142,6 @@ importers:
       react:
         specifier: ^18.3.1
         version: 18.3.1
-    peerDependencies:
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
     devDependencies:
       '@types/react':
         specifier: ^18.3.18
@@ -155,6 +157,12 @@ importers:
         version: 5.7.2
 
 packages:
+
+  '@eslint/eslintrc@3.1.0':
+    resolution: {integrity: sha512-4Bfj15dVJdoy3RfZmmo86RK1Fwzn6SstsvK9JS+BaVKqC6QQQQyXekNaC+g+LKNgkQ+2VhGAzm6hO40AhMR3zQ==}
+
+  '@eslint/js@9.18.0':
+    resolution: {integrity: sha512-fK5WJgOK0g8HvJdEZWsKlpKhQcDxZYZY9sHTx6+G8LKrVz8XC0jz3aMPFhYhlyMBo8fMb5N8E+2F2n2OqOOWdg==}
 
   '@types/node@22.10.2':
     resolution: {integrity: sha512-9A5Nde9RIUI19eWxJq7H7Daw4GKhxEjx/4nwD9nCOuS7VCLT1J4m8v8fBhWWFCZC9wYHMRgr1VjKJp/Zt8Vq6Q==}
