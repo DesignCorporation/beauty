@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-primary: #667eea;
+  --color-secondary: #764ba2;
+}
+
+body {
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Critical CSS for above-the-fold content */
+.hero-section {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+/* Reduce layout shifts */
+.service-card {
+  aspect-ratio: 1 / 1.2;
+  contain: layout;
+}
+
+/* Performance optimizations */
+.lazy-image {
+  will-change: auto;
+  content-visibility: auto;
+}
