@@ -1,5 +1,14 @@
 {
   "name": "@dc-beauty/utils",
   "version": "0.1.0",
-  "main": "src/index.ts"
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'No lint configured for @dc-beauty/utils'",
+    "test": "echo 'No tests configured for @dc-beauty/utils'"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
 }
