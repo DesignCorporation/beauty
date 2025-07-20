@@ -1,25 +1,29 @@
 {
-  "name": "@dc-beauty/root",
+  "name": "@dc-beauty/monorepo",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.0.0",
+  "description": "Beauty Platform - SaaS for beauty salons",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "pnpm -r --parallel run dev",
-    "build": "pnpm -r run build",
-    "lint": "pnpm -r run lint",
-    "typecheck": "pnpm -r run typecheck",
-    "format": "pnpm -r run format"
-  },
-  "engines": {
-    "node": ">=22"
+    "dev": "concurrently \"pnpm --filter @dc-beauty/api dev\" \"pnpm --filter @dc-beauty/web-crm dev\" \"pnpm --filter @dc-beauty/web-booking dev\"",
+    "build": "pnpm --recursive build",
+    "lint": "pnpm --recursive lint",
+    "test": "pnpm --recursive test",
+    "clean": "pnpm --recursive clean"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^6.22.0",
     "@typescript-eslint/parser": "^6.22.0",
+    "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.0.0",
     "eslint-config-next": "latest",
-    "prettier": "^3.0.0",
     "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
   }
 }
