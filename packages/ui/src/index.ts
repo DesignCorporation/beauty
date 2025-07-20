@@ -1,21 +1,26 @@
 import React from 'react';
 
 export interface HelloBeautyProps {
-  name: string;
+  message?: string;
 }
 
-export function HelloBeauty({ name }: HelloBeautyProps): JSX.Element {
-  return (
-    <div style={{ 
-      padding: '1rem', 
-      border: '1px solid #e0e0e0', 
+export const HelloBeauty: React.FC<HelloBeautyProps> = ({ 
+  message = "Beauty Platform - Modern SaaS for Beauty Salons" 
+}) => {
+  return React.createElement('div', {
+    style: {
+      padding: '2rem',
+      textAlign: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'white',
       borderRadius: '8px',
-      backgroundColor: '#f8f9fa',
-      color: '#333'
-    }}>
-      <p>👋 Hello {name} from @dc-beauty/ui!</p>
-    </div>
-  );
-}
+      fontFamily: 'system-ui, -apple-system, sans-serif'
+    }
+  }, [
+    React.createElement('h1', { key: 'title' }, '💄 Beauty Platform'),
+    React.createElement('p', { key: 'message' }, message),
+    React.createElement('small', { key: 'version' }, 'v1.0.0 - MultiTenant SaaS')
+  ]);
+};
 
-export {};
+export default HelloBeauty;
