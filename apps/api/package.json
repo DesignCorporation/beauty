@@ -17,7 +17,6 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@dc-beauty/config": "workspace:*",
     "@dc-beauty/db": "workspace:*",
     "@dc-beauty/utils": "workspace:*",
     "express": "^4.18.0",

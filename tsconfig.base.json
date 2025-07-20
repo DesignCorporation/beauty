@@ -18,7 +18,6 @@
     "paths": {
       "@dc-beauty/db": ["packages/db/src"],
       "@dc-beauty/ui": ["packages/ui/src"],
-      "@dc-beauty/config": ["packages/config/src"],
       "@dc-beauty/utils": ["packages/utils/src"]
     }
   },

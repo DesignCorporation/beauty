@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import { env } from '@dc-beauty/config';
 import { logger } from '@dc-beauty/utils';
 
 // Middleware imports

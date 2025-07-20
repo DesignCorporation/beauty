@@ -1,4 +1,3 @@
-import { env } from '@dc-beauty/config';
 import { logger } from '@dc-beauty/utils';
 import { createServer } from './server.js';
 
