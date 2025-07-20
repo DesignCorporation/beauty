@@ -6,6 +6,17 @@ const ServiceList = dynamic(() => import('../components/ServiceList'), {
   loading: () => <div className="animate-pulse h-96 bg-gray-200 rounded-lg" />
 })
 
+// Required for static export with dynamic routes
+export async function generateStaticParams() {
+  // For MVP, generate static params for demo salons
+  // In production, this would fetch from API or database
+  return [
+    { slug: 'demo-salon' },
+    { slug: 'studio-anna' },
+    { slug: 'beauty-center' }
+  ]
+}
+
 export default function SalonPage({ params }: { params: { slug: string } }) {
   const isEmbed = typeof window !== 'undefined' && 
     new URLSearchParams(window.location.search).get('embed') === '1'
