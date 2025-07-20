@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true
+  },
+  "include": [],
+  "references": [
+    { "path": "./packages/utils" },
+    { "path": "./packages/ui" }
+  ]
+}
