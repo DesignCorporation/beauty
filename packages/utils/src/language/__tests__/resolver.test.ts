@@ -9,7 +9,7 @@ describe('Language Resolver Tests (L01-L10)', () => {
       client: { preferredLocale: 'ru' },
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl', 'ru', 'en'],
+        supportedLocales: ['pl', 'ru', 'en'] as SupportedLocale[],
         autoTranslateEnabled: true
       }
     };
@@ -22,11 +22,11 @@ describe('Language Resolver Tests (L01-L10)', () => {
     const options: ResolveLocaleOptions = {
       client: { 
         preferredLocale: 'uk',  // не поддерживается
-        alternateLocales: ['ru', 'en']  // ru поддерживается
+        alternateLocales: ['ru', 'en'] as SupportedLocale[]  // ru поддерживается
       },
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl', 'ru', 'en'],
+        supportedLocales: ['pl', 'ru', 'en'] as SupportedLocale[],
         autoTranslateEnabled: true
       }
     };
@@ -39,11 +39,11 @@ describe('Language Resolver Tests (L01-L10)', () => {
     const options: ResolveLocaleOptions = {
       client: { 
         preferredLocale: 'uk',
-        alternateLocales: ['uk']
+        alternateLocales: ['uk'] as SupportedLocale[]
       },
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl', 'en'],
+        supportedLocales: ['pl', 'en'] as SupportedLocale[],
         autoTranslateEnabled: true
       },
       browserLocales: ['en-US', 'pl-PL']
@@ -57,11 +57,11 @@ describe('Language Resolver Tests (L01-L10)', () => {
     const options: ResolveLocaleOptions = {
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl', 'ru', 'en'],
+        supportedLocales: ['pl', 'ru', 'en'] as SupportedLocale[],
         autoTranslateEnabled: true
       },
       staff: {
-        spokenLocales: ['en', 'ru']
+        spokenLocales: ['en', 'ru'] as SupportedLocale[]
       }
     };
     
@@ -74,7 +74,7 @@ describe('Language Resolver Tests (L01-L10)', () => {
       client: { preferredLocale: 'uk' }, // не поддерживается
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl', 'en'],
+        supportedLocales: ['pl', 'en'] as SupportedLocale[],
         publicDefaultLocale: 'en',
         autoTranslateEnabled: true
       }
@@ -89,7 +89,7 @@ describe('Language Resolver Tests (L01-L10)', () => {
       client: { preferredLocale: 'uk' },
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl'],
+        supportedLocales: ['pl'] as SupportedLocale[],
         autoTranslateEnabled: true
       }
     };
@@ -102,16 +102,16 @@ describe('Language Resolver Tests (L01-L10)', () => {
     const options: ResolveLocaleOptions = {
       client: { 
         preferredLocale: 'uk',  // не поддерживается
-        alternateLocales: ['ru', 'en', 'pl']  // en первый поддерживается
+        alternateLocales: ['ru', 'en', 'pl'] as SupportedLocale[]  // en первый поддерживается
       },
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl', 'en'],  // ru НЕ поддерживается
+        supportedLocales: ['pl', 'en'] as SupportedLocale[],  // ru НЕ поддерживается
         publicDefaultLocale: 'en',
         autoTranslateEnabled: true
       },
       staff: {
-        spokenLocales: ['pl', 'ru']  // ru не поддерживается салоном
+        spokenLocales: ['pl', 'ru'] as SupportedLocale[]  // ru не поддерживается салоном
       },
       browserLocales: ['uk-UA', 'ru-RU', 'en-US']
     };
@@ -125,7 +125,7 @@ describe('Language Resolver Tests (L01-L10)', () => {
     const options: ResolveLocaleOptions = {
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl', 'uk', 'en'],
+        supportedLocales: ['pl', 'uk', 'en'] as SupportedLocale[],
         autoTranslateEnabled: true
       },
       browserLocales: ['uk-UA', 'en-US', 'pl-PL']
@@ -139,11 +139,11 @@ describe('Language Resolver Tests (L01-L10)', () => {
     const options: ResolveLocaleOptions = {
       client: { 
         preferredLocale: 'en',
-        alternateLocales: ['ru', 'uk']
+        alternateLocales: ['ru', 'uk'] as SupportedLocale[]
       },
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl'],  // только польский
+        supportedLocales: ['pl'] as SupportedLocale[],  // только польский
         autoTranslateEnabled: false
       },
       browserLocales: ['en-US', 'ru-RU']
@@ -157,7 +157,7 @@ describe('Language Resolver Tests (L01-L10)', () => {
     const options: ResolveLocaleOptions = {
       salon: {
         primaryLocale: 'pl',
-        supportedLocales: ['pl', 'en'],
+        supportedLocales: ['pl', 'en'] as SupportedLocale[],
         autoTranslateEnabled: true
       },
       client: undefined,
@@ -201,7 +201,7 @@ describe('Language Resolver Tests (L01-L10)', () => {
         client: { preferredLocale: 'en' },
         salon: {
           primaryLocale: 'pl',
-          supportedLocales: [],
+          supportedLocales: [] as SupportedLocale[],
           autoTranslateEnabled: true
         }
       };
@@ -215,7 +215,7 @@ describe('Language Resolver Tests (L01-L10)', () => {
         client: { preferredLocale: 'ru' },
         salon: {
           primaryLocale: 'pl',
-          supportedLocales: ['pl', 'ru', 'en'],
+          supportedLocales: ['pl', 'ru', 'en'] as SupportedLocale[],
           autoTranslateEnabled: true
         },
         browserLocales: ['en-US', 'pl-PL'] // en имеет высший приоритет в browser
@@ -229,7 +229,7 @@ describe('Language Resolver Tests (L01-L10)', () => {
       const options: ResolveLocaleOptions = {
         salon: {
           primaryLocale: 'pl',
-          supportedLocales: ['pl', 'uk', 'en'],
+          supportedLocales: ['pl', 'uk', 'en'] as SupportedLocale[],
           autoTranslateEnabled: true
         },
         browserLocales: ['ua-UA', 'uk-UA'] // оба должны нормализоваться к uk
