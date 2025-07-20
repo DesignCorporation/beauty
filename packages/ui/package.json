@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'No lint configured for @dc-beauty/ui'",
+    "test": "echo 'No tests configured for @dc-beauty/ui'"
+  },
   "dependencies": {
     "react": "^18.3.1"
   },
