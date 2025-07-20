@@ -11,7 +11,6 @@
     "studio": "prisma studio",
     "build": "tsc -p .",
     "typecheck": "tsc -p . --noEmit",
-    "lint": "eslint . --ext .ts",
     "format": "prettier --write ."
   },
   "dependencies": {
