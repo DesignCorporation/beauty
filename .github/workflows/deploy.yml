@@ -40,20 +40,24 @@ jobs:
         
     - name: Upload GitHub Pages artifact
       if: github.ref == 'refs/heads/main'
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
       with:
         path: apps/web-booking/out
         
     - name: Deploy to Vercel
-      if: github.ref == 'refs/heads/main' && vars.VERCEL_TOKEN != ''
+      if: github.ref == 'refs/heads/main'
       env:
         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       run: |
-        npm install -g vercel@latest
-        cd apps/web-booking
-        vercel deploy --prod --yes --token $VERCEL_TOKEN
+        if [ -n "$VERCEL_TOKEN" ]; then
+          npm install -g vercel@latest
+          cd apps/web-booking
+          vercel deploy --prod --yes --token $VERCEL_TOKEN
+        else
+          echo "Vercel secrets not configured, skipping deployment"
+        fi
 
   lighthouse:
     runs-on: ubuntu-latest
@@ -101,4 +105,4 @@ jobs:
     steps:
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v2
+      uses: actions/deploy-pages@v4
