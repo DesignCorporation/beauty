@@ -23,10 +23,17 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
+        cache: 'pnpm'
         
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install --frozen-lockfile
       
+    - name: Remove conflicting config files
+      run: |
+        # Remove conflicting Next.js config files if they exist
+        rm -f apps/web-booking/next.config.ts
+        rm -f apps/web-booking/vite.config.ts
+        
     - name: Build web-booking
       run: |
         cd apps/web-booking
@@ -35,13 +42,14 @@ jobs:
     - name: Copy widget to dist
       run: |
         mkdir -p apps/web-booking/out/dist
-        cp apps/web-booking/public/widget.js apps/web-booking/out/dist/
+        if [ -f apps/web-booking/public/widget.js ]; then
+          cp apps/web-booking/public/widget.js apps/web-booking/out/dist/
+        fi
         
     - name: Upload GitHub Pages artifact
       if: github.ref == 'refs/heads/main'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-pages-artifact@v3
       with:
-        name: github-pages
         path: apps/web-booking/out
         
     - name: Deploy to Vercel
@@ -77,10 +85,16 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
+        cache: 'pnpm'
         
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install --frozen-lockfile
       
+    - name: Remove conflicting config files
+      run: |
+        rm -f apps/web-booking/next.config.ts
+        rm -f apps/web-booking/vite.config.ts
+        
     - name: Build for lighthouse
       run: |
         cd apps/web-booking
