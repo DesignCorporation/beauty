@@ -10,12 +10,15 @@
   "scripts": {
     "dev": "concurrently \"pnpm --filter @dc-beauty/api dev\" \"pnpm --filter @dc-beauty/web-crm dev\" \"pnpm --filter @dc-beauty/web-booking dev\"",
     "build": "pnpm --recursive build",
-    "lint": "pnpm --recursive lint",
-    "typecheck": "pnpm --recursive typecheck",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit && pnpm --recursive typecheck",
     "test": "echo 'No tests configured yet'",
     "clean": "pnpm --recursive run clean || true"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.18.0",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "concurrently": "^8.2.2",
