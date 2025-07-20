@@ -16,12 +16,12 @@
     "clean": "pnpm --recursive run clean || true"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.22.0",
-    "@typescript-eslint/parser": "^6.22.0",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/parser": "^8.37.0",
     "concurrently": "^8.2.2",
-    "eslint": "^8.57.0",
+    "eslint": "^9.15.0",
     "eslint-config-next": "latest",
-    "typescript": "^5.4.0"
+    "typescript": "^5.7.2"
   },
   "engines": {
     "node": ">=18.0.0",
