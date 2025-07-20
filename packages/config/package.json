@@ -6,7 +6,6 @@
   "scripts": {
     "build": "tsc -p .",
     "typecheck": "tsc -p . --noEmit",
-    "lint": "eslint . --ext .ts",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -14,9 +13,6 @@
     "dotenv": "^16.0.0"
   },
   "devDependencies": {
-    "eslint": "^9.15.0",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@typescript-eslint/parser": "^8.37.0",
     "typescript": "^5.5.0"
   }
 }
