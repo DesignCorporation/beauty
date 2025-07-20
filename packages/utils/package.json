@@ -1,14 +1,21 @@
 {
   "name": "@dc-beauty/utils",
   "version": "0.1.0",
-  "main": "src/index.ts",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit",
-    "lint": "echo 'No lint configured for @dc-beauty/utils'",
-    "test": "echo 'No tests configured for @dc-beauty/utils'"
+    "lint": "eslint . --ext .ts",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^5.4.0"
+    "typescript": "^5.0.0",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
   }
 }
