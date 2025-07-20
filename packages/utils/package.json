@@ -1,15 +1,5 @@
 {
   "name": "@dc-beauty/utils",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./src/index.ts",
-  "scripts": {
-    "build": "tsc -p .",
-    "typecheck": "tsc -p . --noEmit",
-    "lint": "eslint . --ext .ts",
-    "format": "prettier --write ."
-  },
-  "devDependencies": {
-    "typescript": "^5.5.0"
-  }
+  "version": "0.1.0",
+  "main": "src/index.ts"
 }
