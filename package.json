@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Beauty Platform - SaaS for beauty salons",
+  "packageManager": "pnpm@10.17.0",
   "workspaces": [
     "apps/*",
     "packages/*"
