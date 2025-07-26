@@ -4,16 +4,5 @@
   "framework": null,
   "outputDirectory": "apps/web-booking/out",
   "cleanUrls": true,
-  "trailingSlash": false,
-  "functions": {
-    "apps/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/apps/api/$1"
-    }
-  ]
+  "trailingSlash": false
 }
