@@ -17,7 +17,7 @@ export default [
   {
     ignores: [
       "**/node_modules/**",
-      "**/dist/**", 
+      "**/dist/**",
       "**/build/**",
       "**/.next/**",
       "**/coverage/**",
@@ -25,11 +25,11 @@ export default [
       "**/public/**",
       "**/*.config.js",
       "**/*.config.mjs",
-      "**/out/**"
+      "**/*.config.ts"
     ]
   },
   
-  // Base TypeScript config
+  // Base JavaScript/TypeScript config
   {
     files: ["**/*.{js,mjs,cjs,ts,tsx}"],
     languageOptions: {
@@ -37,7 +37,7 @@ export default [
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
-        project: ["./tsconfig.json", "./apps/*/tsconfig.json", "./packages/*/tsconfig.json"],
+        project: ["./tsconfig.base.json", "./apps/*/tsconfig.json", "./packages/*/tsconfig.json"],
         tsconfigRootDir: __dirname,
       },
     },
@@ -48,21 +48,15 @@ export default [
       ...typescriptEslint.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
       "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off", 
+      "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "warn",
     },
   },
   
-  // Next.js specific config for web-booking
+  // Next.js specific config for web-booking app
   {
     files: ["apps/web-booking/**/*.{js,ts,tsx}"],
     ...compat.extends("next/core-web-vitals", "next/typescript")[0],
-  },
-  
-  // React config for web-crm
-  {
-    files: ["apps/web-crm/**/*.{js,ts,tsx}"],
-    ...compat.extends("react-app")[0],
   },
   
   // Node.js config for API
@@ -73,7 +67,7 @@ export default [
         ...globalThis,
         process: "readonly",
         Buffer: "readonly",
-        __dirname: "readonly", 
+        __dirname: "readonly",
         __filename: "readonly",
       },
     },
