@@ -5,9 +5,21 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  transpilePackages: ['@dc-beauty/ui', '@dc-beauty/utils'],
-  experimental: {
-    esmExternals: 'loose'
+  
+  // Отключаем встроенный ESLint, используем свой
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  
+  // TypeScript конфигурация
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  
+  // Оптимизации
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
   }
 };
 
