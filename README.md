@@ -24,69 +24,48 @@
 
 ### Live URLs
 - **GitHub Pages:** https://designcorporation.github.io/beauty
-- **Vercel Preview:** https://beauty-designcorp.vercel.app
 - **Widget Demo:** https://designcorporation.github.io/beauty/demo-salon
 - **API Endpoint:** https://api.beauty.designcorp.eu
-
-### Local Production Testing
-```bash
-# Build and serve locally on production port
-cd apps/web-booking
-pnpm build
-pnpm run deploy-local
-
-# Access at http://localhost:4000
-```
 
 ### Auto-Deploy Pipeline
 - ✅ **GitHub Actions:** Auto-deploy on push to main
 - ✅ **Lighthouse CI:** Mobile performance ≥80 validation
-- ✅ **Multi-target:** GitHub Pages + Vercel deployment
+- ✅ **Corepack Support:** Automatic pnpm version management
 - ✅ **Widget Distribution:** Automatic `/dist/widget.js` copying
-
-## 🛠 Техническая архитектура
-
-**Сервер:** 135.181.156.117 `/var/www/beauty`
-**Домен:** beauty.designcorp.eu (SSL: Let's Encrypt)
-**Репозиторий:** https://github.com/DesignCorporation/beauty
-
-### Apps структура
-```
-apps/
-  ├── api/          # Express API сервер (:4000)
-  ├── web-crm/      # React CRM админка (:5173) 
-  ├── web-booking/  # Next.js публичный сайт (:5174)
-  └── scripts/      # CLI утилиты
-packages/
-  ├── db/           # Prisma schema + utilities
-  ├── config/       # Общие конфигурации
-  ├── ui/           # Компоненты интерфейса
-  └── utils/        # Общие утилиты
-docker/
-  └── n8n/          # n8n workflow automation (:5678)
-```
-
-### База данных
-- **PostgreSQL:** beauty_dev (beauty:beauty)
-- **Мультитенантность:** строгая изоляция по salonId
-- **Модели:** 13 основных таблиц + translations
-- **Валюты:** EUR/PLN/UAH/USD/GBP/CZK с конвертацией
 
 ## 📋 Требования
 
-- Node.js >=18
-- pnpm >=10
-- Docker Desktop
-- PostgreSQL 16+ (через Docker)
-- Redis 7+ (через Docker)
-- n8n (через Docker)
+- **Node.js** >=18 (см. .nvmrc)
+- **pnpm** >=10 (управляется через corepack)
+- **Docker Desktop**
+- **PostgreSQL** 16+ (через Docker)
+- **Redis** 7+ (через Docker)
+
+### Package Manager Setup
+
+Проект использует **corepack** для автоматического управления версией pnpm:
+
+```bash
+# Включите corepack (если еще не включен)
+corepack enable
+
+# Проект автоматически использует pnpm@10.17.0
+pnpm --version  # должно показать 10.17.0 или выше
+```
+
+> ❗ **Важно:** Если получаете ошибку "pnpm 8.x is not compatible with engines.pnpm >=10.0.0", убедитесь что corepack включен.
 
 ## 🚀 Быстрый старт
 
-1. **Клонируйте и установите зависимости**
+1. **Клонируйте и настройте package manager**
    ```bash
    git clone https://github.com/DesignCorporation/beauty.git
    cd beauty
+   
+   # Включите corepack для автоматического управления pnpm
+   corepack enable
+   
+   # Установите зависимости
    pnpm install
    ```
 
@@ -122,6 +101,34 @@ docker/
    - n8n Dashboard: http://localhost:5678
    - Adminer: http://localhost:8080
 
+## 🛠 Техническая архитектура
+
+**Сервер:** 135.181.156.117 `/var/www/beauty`
+**Домен:** beauty.designcorp.eu (SSL: Let's Encrypt)
+**Репозиторий:** https://github.com/DesignCorporation/beauty
+
+### Apps структура
+```
+apps/
+  ├── api/          # Express API сервер (:4000)
+  ├── web-crm/      # React CRM админка (:5173) 
+  ├── web-booking/  # Next.js публичный сайт (:5174)
+  └── scripts/      # CLI утилиты
+packages/
+  ├── db/           # Prisma schema + utilities
+  ├── config/       # Общие конфигурации
+  ├── ui/           # Компоненты интерфейса
+  └── utils/        # Общие утилиты
+docker/
+  └── n8n/          # n8n workflow automation (:5678)
+```
+
+### База данных
+- **PostgreSQL:** beauty_dev (beauty:beauty)
+- **Мультитенантность:** строгая изоляция по salonId
+- **Модели:** 13 основных таблиц + translations
+- **Валюты:** EUR/PLN/UAH/USD/GBP/CZK с конвертацией
+
 ## 💻 Разработка
 
 ```bash
@@ -131,11 +138,8 @@ pnpm dev
 # Сборка всех пакетов
 pnpm build
 
-# Линтинг и форматирование
+# Линтинг и проверка типов
 pnpm lint
-pnpm format
-
-# Проверка типов
 pnpm typecheck
 
 # Работа с БД
@@ -146,6 +150,31 @@ pnpm migrate:deploy  # Применение в prod
 pnpm studio          # Prisma Studio
 pnpm seed            # Создание demo данных
 pnpm seed:salon      # CLI для конкретного салона
+```
+
+## 🔧 Устранение проблем
+
+### pnpm версии не совпадают
+```bash
+# Если получаете ошибку "pnpm 8.x is not compatible"
+corepack enable
+corepack prepare pnpm@10.17.0 --activate
+
+# Проверьте версию
+pnpm --version  # должно быть >=10.0.0
+```
+
+### CI/CD ошибки
+- GitHub Actions автоматически использует corepack
+- Убедитесь что поле `packageManager` присутствует в package.json
+- Локально проверьте: `pnpm typecheck && pnpm build`
+
+### Проблемы с workspace dependencies
+```bash
+# Очистите кэши и переустановите
+pnpm store prune
+rm -rf node_modules apps/*/node_modules packages/*/node_modules
+pnpm install
 ```
 
 ## 🔒 Безопасность
@@ -188,16 +217,6 @@ SEED_RATE_EUR_CZK=25.00
 URL: http://localhost:5678
 User: admin@beauty.designcorp.eu
 Pass: BeautyN8N2025!
-```
-
-### Internal API для n8n
-```bash
-GET /internal/appointments/24h      # Завтрашние записи
-GET /internal/appointments/2h       # Записи через 2 часа
-GET /internal/clients/birthday      # Дни рождения сегодня
-GET /internal/clients/winback       # Клиенты для возврата (90+ дней)
-POST /internal/messaging/send       # Отправка сообщения
-POST /internal/messaging/send-bulk  # Массовая отправка
 ```
 
 ## 📚 API документация
@@ -243,26 +262,7 @@ pnpm test:tp04  # Onboarding Flow
 pnpm test:tp06  # Messaging Hub
 pnpm test:tp07  # Booking API (5 частей)
 pnpm test:tp08  # n8n Workflows
-
-# Конкретные E2E тесты
-cd apps/api
-pnpm test tests/e2e/services.e2e.test.ts      # TP-07 Part 1
-pnpm test tests/e2e/staff.e2e.test.ts         # TP-07 Part 2  
-pnpm test tests/e2e/availability.test.ts      # TP-07 Part 3
-pnpm test tests/e2e/booking.test.ts           # TP-07 Part 4
-pnpm test tests/e2e/integration.test.ts       # TP-07 Part 5
-pnpm test tests/e2e/n8n-workflows.test.ts     # TP-08 Workflows
 ```
-
-### Comprehensive Test Coverage
-- **TP-06 Messaging**: 95%+ coverage, 20+ scenarios, multi-channel testing
-- **TP-07 Booking**: 25+ сценариев полного покрытия API
-- **TP-08 n8n Workflows**: 25+ scenarios, security & automation testing
-- **Мультиязычность:** тесты с переключением pl/en/uk/ru
-- **Race conditions:** защита от двойного бронирования
-- **Performance:** нагрузочное тестирование и rate limiting
-- **Edge cases:** невалидные данные, бизнес-правила
-- **Real-world scenarios:** типичный день салона с 5+ клиентами
 
 ## 📱 Messaging Hub (TP-06)
 
@@ -280,14 +280,14 @@ pnpm test tests/e2e/n8n-workflows.test.ts     # TP-08 Workflows
 
 ## 🔧 Технологии
 
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Next.js 14
 - **Backend**: Node.js, Express, TypeScript
 - **Database**: PostgreSQL, Prisma ORM
 - **Cache**: Redis
 - **Real-time**: Socket.io
 - **Automation**: n8n workflows
 - **Monorepo**: pnpm workspaces
-- **CI/CD**: GitHub Actions
+- **CI/CD**: GitHub Actions, corepack
 - **Containerization**: Docker Compose
 - **Authentication**: JWT with role-based access
 - **Translations**: Custom bridge system
