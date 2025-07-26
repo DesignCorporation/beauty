@@ -8,8 +8,13 @@
   --color-secondary: #764ba2;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-feature-settings: "rlig" 1, "calt" 1;
+  line-height: 1.6;
 }
 
 .gradient-primary {
@@ -38,4 +43,43 @@ body {
 .lazy-image {
   will-change: auto;
   content-visibility: auto;
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glassmorphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
 }
