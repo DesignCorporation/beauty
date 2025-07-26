@@ -8,7 +8,8 @@
 
 **Repository:** https://github.com/DesignCorporation/beauty
 
-**Current Status:** ✅ MVP COMPLETE (TP-01→TP-09 finished)
+**Current Status:** ✅ **LIVE & WORKING** (TP-01→TP-09 complete + CI/CD fixed)
+- **Live Demo:** https://designcorporation.github.io/beauty/
 - Multitenant PostgreSQL architecture with strict data isolation
 - 40+ beauty services, multi-currency (EUR/PLN/UAH/USD/GBP/CZK)  
 - Complete onboarding API for salon registration
@@ -18,9 +19,10 @@
 - n8n automation workflows (reminders, birthday, winback)
 - Next.js public microsite + embeddable widget
 
-**Live Production:**
-- Demo: https://designcorporation.github.io/beauty/demo-salon
-- Widget: https://designcorporation.github.io/beauty/dist/widget.js
+**Production URLs:**
+- **GitHub Pages:** https://designcorporation.github.io/beauty/ ✅ WORKING
+- **Vercel:** https://beauty-designcorporation.vercel.app/ (fixing deployment)
+- **Widget:** https://designcorporation.github.io/beauty/dist/widget.js
 
 **Tech Stack:** TypeScript monorepo (pnpm), Express, React, PostgreSQL, n8n, Docker
 
@@ -47,6 +49,12 @@ pnpm install && docker compose -f docker/docker-compose.dev.yml up -d
 cd packages/db && pnpm generate && pnpm migrate:dev && pnpm seed && cd ../../
 pnpm dev
 ```
+
+**CI/CD Status:**
+- ✅ GitHub Actions working (pnpm@9.14.4, TypeScript, Next.js build)
+- ✅ Automated deployment to GitHub Pages
+- 🔧 Vercel deployment (fixing configuration)
+- ✅ All TypeScript compilation errors resolved
 
 **Essential Reading:**
 1. `AI_START_HERE.md` - Quick overview
