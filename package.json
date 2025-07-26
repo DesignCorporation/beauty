@@ -2,6 +2,7 @@
   "name": "@dc-beauty/monorepo",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Beauty Platform - SaaS for beauty salons",
   "workspaces": [
     "apps/*",
@@ -24,9 +25,11 @@
     "concurrently": "^8.2.2",
     "eslint": "^9.15.0",
     "eslint-config-next": "latest",
+    "prettier": "^3.3.3",
     "typescript": "^5.7.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "pnpm": ">=10.0.0"
   }
 }
