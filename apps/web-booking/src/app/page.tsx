@@ -1,5 +1,6 @@
 import { HelloBeauty } from '@dc-beauty/ui';
 import { createBeautyConfig, formatCurrency } from '@dc-beauty/utils';
+import Link from 'next/link';
 
 export default function HomePage() {
   const config = createBeautyConfig();
@@ -29,6 +30,29 @@ export default function HomePage() {
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <div className="text-blue-600 font-bold text-xl">🔧</div>
               <div className="text-sm text-gray-600">In Progress</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Demo Pages Navigation */}
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            🎨 Demo Pages
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Link 
+              href="/calendar" 
+              className="block p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-transparent hover:border-blue-300 transition-all duration-300 hover:shadow-lg"
+            >
+              <div className="text-2xl mb-2">📅</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Salon Calendar</h3>
+              <p className="text-gray-600 text-sm">Fresha-style appointment calendar with time slots and staff management</p>
+            </Link>
+            
+            <div className="block p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-2 border-dashed border-gray-300">
+              <div className="text-2xl mb-2">🏪</div>
+              <h3 className="text-lg font-semibold text-gray-500 mb-2">Salon Microsite</h3>
+              <p className="text-gray-500 text-sm">Coming soon: Public booking page for individual salons</p>
             </div>
           </div>
         </div>
