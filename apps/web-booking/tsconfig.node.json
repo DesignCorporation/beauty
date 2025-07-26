@@ -1,13 +1,16 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
     "module": "commonjs",
     "target": "es2019",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "declaration": true,
+    "outDir": "./dist"
   },
-  "include": ["vite.config.ts", "next.config.js"]
+  "include": ["vite.config.ts", "next.config.js", "postcss.config.js", "tailwind.config.js"]
 }
