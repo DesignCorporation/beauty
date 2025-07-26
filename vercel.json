@@ -1,8 +1,8 @@
 {
-  "buildCommand": "pnpm build",
-  "installCommand": "corepack enable && corepack prepare pnpm@9.14.4 --activate && pnpm install",
-  "framework": null,
+  "framework": "nextjs",
+  "buildCommand": "cd apps/web-booking && npm run build",
   "outputDirectory": "apps/web-booking/out",
+  "installCommand": "npm install -g pnpm@9.14.4 && pnpm install",
   "cleanUrls": true,
   "trailingSlash": false
 }
