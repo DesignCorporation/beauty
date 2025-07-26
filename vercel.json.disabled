@@ -1,0 +1,16 @@
+# Vercel deployment temporarily disabled
+# 
+# Reason: pnpm version conflict in Vercel environment
+# Using GitHub Pages for now: https://designcorporation.github.io/beauty/
+#
+# This file can be renamed back to vercel.json when needed
+#
+# Original config:
+# {
+#   "framework": "nextjs",
+#   "buildCommand": "cd apps/web-booking && npm run build",
+#   "outputDirectory": "apps/web-booking/out",
+#   "installCommand": "npm install -g pnpm@9.14.4 && pnpm install",
+#   "cleanUrls": true,
+#   "trailingSlash": false
+# }
