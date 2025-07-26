@@ -5,21 +5,26 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '18'
   PNPM_VERSION: '9.14.4'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
     
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-      
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -67,7 +72,9 @@ jobs:
         continue-on-error: true
         
       - name: Build web-booking app
-        run: pnpm build:apps
+        run: |
+          cd apps/web-booking
+          pnpm build
         
       - name: Add .nojekyll file
         run: touch apps/web-booking/out/.nojekyll
