@@ -1,28 +1,26 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM"],
-    "allowJs": true,
-    "skipLibCheck": true,
+    "target": "ES2020",
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "strict": false,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
-    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": false,
-    "incremental": true,
-    "declaration": true,
-    "outDir": "./dist",
     "types": ["node", "jest"]
   },
   "include": [
-    "src/**/*",
-    "src/**/__tests__/**/*.ts"
+    "src/**/*"
   ],
   "exclude": [
+    "dist",
     "node_modules",
-    "dist"
+    "**/*.test.ts"
   ]
 }
