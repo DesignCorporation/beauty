@@ -12,8 +12,8 @@
     "build": "pnpm --recursive build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
-    "typecheck": "echo 'TypeScript check temporarily disabled'",
-    "test": "echo 'No tests configured yet'",
+    "typecheck": "pnpm --recursive typecheck",
+    "test": "pnpm --recursive test",
     "clean": "pnpm --recursive run clean || true"
   },
   "devDependencies": {
