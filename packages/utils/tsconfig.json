@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "lib": ["es2020", "dom"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": false,
@@ -17,6 +17,12 @@
     "outDir": "./dist",
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/__tests__/**"]
+  "include": [
+    "src/**/*",
+    "src/**/__tests__/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
