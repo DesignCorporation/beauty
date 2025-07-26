@@ -8,6 +8,7 @@ on:
 
 env:
   NODE_VERSION: '18'
+  PNPM_VERSION: '9.14.4'
 
 jobs:
   build-and-deploy:
@@ -32,8 +33,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           
-      - name: Enable corepack
-        run: corepack enable
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
           
       - name: Get pnpm store directory
         shell: bash
@@ -50,6 +53,14 @@ jobs:
             
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
+        
+      - name: TypeScript check
+        run: pnpm typecheck
+        continue-on-error: true
+        
+      - name: ESLint check
+        run: pnpm lint
+        continue-on-error: true
         
       - name: Build packages
         run: pnpm build:packages

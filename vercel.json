@@ -1,0 +1,19 @@
+{
+  "buildCommand": "pnpm build",
+  "installCommand": "corepack enable && corepack prepare pnpm@9.14.4 --activate && pnpm install",
+  "framework": null,
+  "outputDirectory": "apps/web-booking/out",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "functions": {
+    "apps/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/apps/api/$1"
+    }
+  ]
+}
