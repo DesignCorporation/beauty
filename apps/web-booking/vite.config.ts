@@ -1,24 +1,27 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  },
+  base: '/beauty/',
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
+    emptyOutDir: true,
     rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        widget: resolve(__dirname, 'src/widget.tsx')
+      },
       output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === 'widget' ? 'widget.js' : '[name]-[hash].js';
+        }
       }
     }
   },
-  base: '/beauty/'
-})
+  server: {
+    port: 5174,
+    host: true
+  }
+});
