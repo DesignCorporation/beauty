@@ -77,7 +77,7 @@ jobs:
           pnpm build
         
       - name: Add .nojekyll file
-        run: touch apps/web-booking/out/.nojekyll
+        run: touch apps/web-booking/dist/.nojekyll
         
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -85,7 +85,7 @@ jobs:
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/web-booking/out
+          path: apps/web-booking/dist
           
       - name: Deploy to GitHub Pages
         id: deployment
