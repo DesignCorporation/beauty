@@ -31,13 +31,33 @@ jobs:
         with:
           version: 9.14.4
 
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Run typecheck
+        run: pnpm typecheck
+
+      - name: Run linting
+        run: pnpm lint
+
+      - name: Build packages
+        run: pnpm build:packages
 
       - name: Build web-booking app
-        run: |
-          cd apps/web-booking
-          pnpm build
+        run: pnpm --filter @dc-beauty/web-booking build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
