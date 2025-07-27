@@ -1,16 +1,12 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "module": "commonjs",
-    "target": "es2019",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
     "strict": true,
-    "declaration": true,
-    "outDir": "./dist"
+    "types": ["node"]
   },
-  "include": ["vite.config.ts", "next.config.js", "postcss.config.js", "tailwind.config.js"]
+  "include": ["vite.config.ts"]
 }
