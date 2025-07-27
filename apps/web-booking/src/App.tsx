@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './index.css';
+import BookingModal from './components/BookingModal';
 
 // Import icons
 import { Sparkles, Calendar, Heart, Star, Users, MapPin } from 'lucide-react';
 
 // Hero Section Component
 const HeroSection: React.FC = () => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
   return (
     <section className="relative section-padding overflow-hidden">
       {/* Background decorations */}
@@ -36,7 +39,10 @@ const HeroSection: React.FC = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up animate-delay-200">
-            <button className="btn-primary btn-lg group">
+            <button 
+              onClick={() => setIsBookingOpen(true)}
+              className="btn-primary btn-lg group"
+            >
               <Calendar className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
               Book Appointment
             </button>
@@ -62,6 +68,12 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      <BookingModal 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)} 
+      />
     </section>
   );
 };
@@ -228,6 +240,8 @@ const TechStackSection: React.FC = () => {
 
 // Main App Component
 function App() {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
   return (
     <div className="min-h-screen">
       {/* Navigation */}
@@ -245,7 +259,10 @@ function App() {
               <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Features</a>
               <a href="#services" className="text-gray-600 hover:text-gray-900 transition-colors">Services</a>
               <a href="#tech" className="text-gray-600 hover:text-gray-900 transition-colors">Technology</a>
-              <button className="btn-primary">
+              <button 
+                onClick={() => setIsBookingOpen(true)}
+                className="btn-primary"
+              >
                 Get Started
               </button>
             </div>
@@ -288,6 +305,12 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Global Booking Modal */}
+      <BookingModal 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)} 
+      />
     </div>
   );
 }
