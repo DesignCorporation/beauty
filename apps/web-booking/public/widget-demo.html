@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty Platform Widget Demo</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .widget-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .option-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .option-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .option-card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .option-card p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .demo-content {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 3rem;
+            border-radius: 1.5rem;
+            margin: 2rem 0;
+            min-height: 60vh;
+        }
+        
+        .demo-content h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f8f9ff;
+            border-radius: 1rem;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+            margin: 1rem 0.5rem;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .widget-demo-btn {
+            background: #10b981;
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .widget-demo-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>Beauty Platform Widget</h1>
+            <p>Embeddable booking widget for beauty salons</p>
+        </div>
+        
+        <div class="card">
+            <h2>Quick Integration</h2>
+            <p>Add our booking widget to your website with just one line of code:</p>
+            <div class="code-block">
+&lt;script src="https://designcorporation.github.io/beauty/dist/widget.js" 
+        data-beauty-widget
+        data-salon-slug="your-salon"
+        data-theme="light"
+        data-position="bottom-right"&gt;&lt;/script&gt;
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Try Different Positions</h2>
+            <div class="widget-options">
+                <div class="option-card" onclick="changeWidgetPosition('bottom-right')">
+                    <h3>Bottom Right</h3>
+                    <p>Classic position</p>
+                </div>
+                <div class="option-card" onclick="changeWidgetPosition('bottom-left')">
+                    <h3>Bottom Left</h3>
+                    <p>Alternative placement</p>
+                </div>
+                <div class="option-card" onclick="changeWidgetPosition('top-right')">
+                    <h3>Top Right</h3>
+                    <p>Header area</p>
+                </div>
+                <div class="option-card" onclick="changeWidgetPosition('top-left')">
+                    <h3>Top Left</h3>
+                    <p>Menu area</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="widget-demo-btn" onclick="toggleWidgetTheme()">Toggle Theme</button>
+                <button class="widget-demo-btn" onclick="customizeWidget()">Custom Colors</button>
+                <button class="widget-demo-btn" onclick="resetWidget()">Reset Widget</button>
+            </div>
+        </div>
+        
+        <div class="demo-content">
+            <h2>Beauty Platform Features</h2>
+            <p>Experience the complete beauty booking solution with modern design and powerful functionality.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📅</div>
+                    <h3>Smart Booking</h3>
+                    <p>Real-time availability with automated confirmations and reminders</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Multi-language</h3>
+                    <p>Support for Polish, English, Ukrainian, and Russian</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💳</div>
+                    <h3>Multi-currency</h3>
+                    <p>EUR, PLN, UAH, USD, GBP, CZK support</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🏢</div>
+                    <h3>Multi-tenant</h3>
+                    <p>Secure isolation between different salons</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Automation</h3>
+                    <p>n8n workflows for reminders and follow-ups</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💼</div>
+                    <h3>40+ Services</h3>
+                    <p>Complete service library across 8 categories</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="https://designcorporation.github.io/beauty/" class="cta-button">View Live Demo</a>
+                <a href="https://github.com/DesignCorporation/beauty" class="cta-button">GitHub Repository</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widget Integration -->
+    <script>
+        let currentWidget = null;
+        let currentTheme = 'light';
+        let currentPosition = 'bottom-right';
+
+        function initWidget(options = {}) {
+            // Remove existing widget
+            const existing = document.getElementById('beauty-widget-container');
+            if (existing) {
+                existing.remove();
+            }
+
+            // Create new widget container
+            const container = document.createElement('div');
+            container.id = 'beauty-widget-container';
+            document.body.appendChild(container);
+
+            // Mock widget initialization (in real implementation, would load actual widget)
+            const widget = document.createElement('div');
+            widget.style.cssText = `
+                position: fixed;
+                ${getPositionStyles(options.position || currentPosition)}
+                width: 60px;
+                height: 60px;
+                background: ${options.primaryColor || '#b084ff'};
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                box-shadow: 0 10px 40px -10px rgba(176, 132, 255, 0.4);
+                transition: all 0.3s ease;
+                z-index: 9999;
+                color: white;
+                font-size: 24px;
+            `;
+            widget.innerHTML = '📅';
+            widget.onclick = () => alert('Booking modal would open here!');
+            
+            widget.addEventListener('mouseenter', () => {
+                widget.style.transform = 'scale(1.1)';
+            });
+            
+            widget.addEventListener('mouseleave', () => {
+                widget.style.transform = 'scale(1)';
+            });
+
+            container.appendChild(widget);
+            currentWidget = widget;
+        }
+
+        function getPositionStyles(position) {
+            const positions = {
+                'bottom-right': 'bottom: 20px; right: 20px;',
+                'bottom-left': 'bottom: 20px; left: 20px;',
+                'top-right': 'top: 20px; right: 20px;',
+                'top-left': 'top: 20px; left: 20px;'
+            };
+            return positions[position] || positions['bottom-right'];
+        }
+
+        function changeWidgetPosition(position) {
+            currentPosition = position;
+            initWidget({ position, theme: currentTheme });
+        }
+
+        function toggleWidgetTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            initWidget({ position: currentPosition, theme: currentTheme });
+        }
+
+        function customizeWidget() {
+            const colors = ['#b084ff', '#ff4d75', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            initWidget({ position: currentPosition, theme: currentTheme, primaryColor: randomColor });
+        }
+
+        function resetWidget() {
+            currentTheme = 'light';
+            currentPosition = 'bottom-right';
+            initWidget();
+        }
+
+        // Initialize widget on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initWidget();
+        });
+    </script>
+</body>
+</html>
