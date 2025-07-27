@@ -1,8 +1,17 @@
 import { HelloBeauty } from '@dc-beauty/ui';
 import { createBeautyConfig, formatCurrency } from '@dc-beauty/utils';
+import dynamic from 'next/dynamic';
+
+// Dynamically import calendar with no SSR to avoid hydration issues
+const CalendarDemo = dynamic(() => import('./calendar'), { ssr: false });
 
 export default function HomePage() {
   const config = createBeautyConfig();
+  const showCalendar = typeof window !== 'undefined' && window.location.hash === '#calendar';
+  
+  if (showCalendar) {
+    return <CalendarDemo />;
+  }
   
   return (
     <>
@@ -19,7 +28,7 @@ export default function HomePage() {
                 <h1 className="text-xl font-bold text-gray-900">Beauty Platform</h1>
               </div>
               <div className="flex items-center space-x-6">
-                <a href="/calendar" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">Calendar</a>
+                <a href="#calendar" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">Calendar</a>
                 <a href="#features" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">Features</a>
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium">
                   Get Started
@@ -51,8 +60,13 @@ export default function HomePage() {
             
             <div className="flex items-center justify-center space-x-4 mb-16">
               <a 
-                href="/calendar" 
+                href="#calendar" 
                 className="bg-indigo-600 text-white px-8 py-4 rounded-xl hover:bg-indigo-700 transition-all duration-300 font-medium text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.hash = 'calendar';
+                  window.location.reload();
+                }}
               >
                 🗓️ View Calendar Demo
               </a>
