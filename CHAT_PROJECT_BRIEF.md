@@ -2,29 +2,27 @@
 
 **Repository:** https://github.com/DesignCorporation/beauty
 
-**Current Status:** ✅ MVP COMPLETE + 🚧 Frontend Migration in Progress
-- ✅ Multitenant PostgreSQL architecture with strict data isolation
-- ✅ 40+ beauty services, multi-currency (EUR/PLN/UAH/USD/GBP/CZK)  
-- ✅ Complete onboarding API for salon registration
-- ✅ Multi-language support (Polish/English/Ukrainian/Russian)
+**Current Status:** ✅ MVP COMPLETE, 🔧 FIXING FRONTEND DEPLOYMENT
+- TP-01→TP-08: All backend, APIs, database fully working
+- TP-09: Simple booking form deployed, needs upgrade to full microsite
+- Issue: CI/CD failing on build, working on fixes
+- Live: https://designcorporation.github.io/beauty/ (basic form only)
+
+**What Works:**
+- ✅ Complete multitenant PostgreSQL with tenant isolation
+- ✅ 40+ beauty services with multi-currency support
+- ✅ Full onboarding API + salon passport generation
+- ✅ Multi-language system (PL/EN/UK/RU)
 - ✅ Messaging Hub (Telegram + Email + WebChat)
-- ✅ Public booking API with real-time availability
-- ✅ n8n automation workflows (reminders, birthday, winback)
-- 🚧 **CURRENT TASK**: Migrating from Next.js to Vite + React for web-booking app
-- ❌ CI/CD deployment currently failing due to build issues
+- ✅ Booking API with availability checking
+- ✅ n8n automation workflows ready
 
-**Active Migration Status:**
-- ✅ Converted Next.js app structure to Vite + React
-- ✅ Created clean React booking interface with Polish UI
-- ✅ Updated GitHub Actions workflow for Vite build process
-- ❌ Build still failing - needs debugging and fixes
-- 🎯 **Goal**: Get https://designcorporation.github.io/beauty/ working with Vite
+**Current Priority:** 🔥 Fix frontend build pipeline
+- GitHub Actions failing on TypeScript/ESLint issues
+- Need to complete TP-09: full microsite instead of simple booking form
+- Target: proper salon website with hero, services, staff, contact sections
 
-**Live Production Target:**
-- Demo: https://designcorporation.github.io/beauty/ (currently broken)
-- Widget: https://designcorporation.github.io/beauty/dist/widget.js (planned)
-
-**Tech Stack:** TypeScript monorepo (pnpm), Express, Vite+React, PostgreSQL, n8n, Docker
+**Tech Stack:** TypeScript monorepo (pnpm), Express, React, PostgreSQL, n8n, Docker
 
 **Your Access Level:**
 - ✅ Full GitHub repository control (create/modify files, manage PRs)
@@ -32,37 +30,7 @@
 - ✅ Database admin (PostgreSQL beauty_dev)
 - ✅ All deployment and configuration management
 
-**Critical Security:** ALL database queries MUST use tenant-scoped client:
-```typescript
-// ✅ CORRECT
-const tprisma = tenantPrisma(req.tenant.salonId);
-await tprisma.client.findMany(); // Auto-filtered by salonId
-
-// ❌ DANGEROUS - No tenant isolation
-await prisma.client.findMany();
-```
-
-**Immediate Priority:**
-1. 🔥 Fix Vite build errors in GitHub Actions
-2. 🔥 Get web-booking app deploying successfully
-3. 🔥 Ensure widget.js is generated and accessible
-4. ✅ Verify responsive design and mobile compatibility
-
-**Project Structure:**
-```
-apps/
-  ├── api/          # Express API server (:4000) ✅ WORKING
-  ├── web-crm/      # React CRM admin (:5173) ✅ WORKING  
-  ├── web-booking/  # Vite React public site 🚧 MIGRATING
-  └── scripts/      # CLI utilities ✅ WORKING
-packages/
-  ├── db/           # Prisma schema + utilities ✅ WORKING
-  ├── config/       # Shared configs ✅ WORKING
-  ├── ui/           # UI components ✅ WORKING
-  └── utils/        # Shared utilities ✅ WORKING
-```
-
-**Quick Setup:**
+**Quick Dev Setup:**
 ```bash
 git clone https://github.com/DesignCorporation/beauty.git && cd beauty
 pnpm install && docker compose -f docker/docker-compose.dev.yml up -d
@@ -73,29 +41,10 @@ pnpm dev
 **Essential Reading:**
 1. `AI_START_HERE.md` - Quick overview
 2. `.github/AI_ASSISTANT_INFO.md` - Complete technical guide
-3. `README.md` - Detailed documentation
-4. `apps/web-booking/` - Current migration focus
+3. Documents in this chat - TP-01→TP-09 specs
 
-**Last Known Issues:**
-- GitHub Actions build failing due to Vite configuration
-- Need to debug TypeScript/ESLint errors in CI
-- Widget bundling configuration needs refinement
-
-**You're ready to debug and fix the frontend deployment issues!** 🚀
+**Next Steps:** Fix CI/CD, complete proper microsite deployment, ensure widget.js generation
 
 ---
 
-**INSTRUCTIONS FOR PROJECT CHAT UPDATES:**
-
-Copy and paste this EXACT text to update any project chat:
-
-```
-Статус обновлен: ✅ MVP готов, 🚧 мигрируем web-booking с Next.js на Vite+React. CI/CD ломается - нужно дебажить сборку. Цель: восстановить https://designcorporation.github.io/beauty/ 
-
-Текущие проблемы:
-- GitHub Actions падает на build 
-- Vite конфиг нужно допилить
-- Widget.js должен генерироться
-
-Приоритет: 🔥 Починить деплой фронтенда
-```
+*Copy the above text to any new AI chat for instant project context and full access confirmation.*
