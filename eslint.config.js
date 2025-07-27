@@ -76,10 +76,26 @@ export default [
     }
   },
   
-  // Next.js specific config for web-booking app
+  // React/Vite specific config for web-booking app
   {
     files: ["apps/web-booking/**/*.{js,ts,tsx}"],
-    ...compat.extends("next/core-web-vitals")[0],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: true
+        }
+      },
+      globals: {
+        React: "readonly"
+      }
+    },
+    rules: {
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off"
+    }
   },
   
   // Node.js config for API
