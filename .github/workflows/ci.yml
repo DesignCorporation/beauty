@@ -61,20 +61,15 @@ jobs:
         
       - name: TypeScript check
         run: pnpm typecheck
-        continue-on-error: true
+        continue-on-error: false
         
       - name: ESLint check
         run: pnpm lint
         continue-on-error: true
         
-      - name: Build packages
-        run: pnpm build:packages
-        continue-on-error: true
-        
-      - name: Build web-booking app
-        run: |
-          cd apps/web-booking
-          pnpm build
+      - name: Build all packages and apps
+        run: pnpm build
+        continue-on-error: false
         
       - name: Add .nojekyll file
         run: touch apps/web-booking/dist/.nojekyll
