@@ -29,3 +29,8 @@ pnpm-debug.log*
 
 # ESLint cache
 .eslintcache
+
+# Remove old folders
+src/app/
+src/components/
+src/lib/
