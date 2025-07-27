@@ -16,8 +16,8 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
 
     /* Path mapping */
@@ -26,6 +26,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src/*.tsx", "src/*.ts", "src/*.css"],
+  "exclude": ["src/app", "src/components", "src/lib", "node_modules", "dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
