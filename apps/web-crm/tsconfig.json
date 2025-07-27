@@ -8,8 +8,7 @@
     "useDefineForClassFields": true,
     "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "noEmit": true
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
