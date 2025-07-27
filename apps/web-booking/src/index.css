@@ -1,188 +1,33 @@
-/* Modern Beauty Platform Global Styles */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cal+Sans:wght@400;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
-    scroll-behavior: smooth;
-  }
-  
-  body {
-    @apply bg-gradient-beauty-subtle text-gray-900;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  * {
-    @apply border-gray-200;
-  }
-  
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    @apply w-2;
-  }
-  
-  ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
+    font-family: system-ui, sans-serif;
   }
 }
 
 @layer components {
-  /* Button Components */
-  .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-all duration-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-  
   .btn-primary {
-    @apply btn bg-gradient-beauty text-white shadow-beauty hover:shadow-beauty-lg hover:scale-105 focus:ring-beauty-500;
+    @apply bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all;
   }
   
-  .btn-secondary {
-    @apply btn bg-white text-gray-900 border border-gray-200 shadow-card hover:shadow-card-hover hover:bg-gray-50 focus:ring-gray-500;
-  }
-  
-  .btn-ghost {
-    @apply btn text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500;
-  }
-  
-  .btn-lg {
-    @apply px-8 py-4 text-base rounded-3xl;
-  }
-  
-  .btn-sm {
-    @apply px-4 py-2 text-xs rounded-xl;
-  }
-  
-  /* Card Components */
   .card {
-    @apply bg-white rounded-3xl shadow-card border border-gray-100;
+    @apply bg-white rounded-2xl shadow-lg p-6;
   }
-  
-  .card-hover {
-    @apply card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
-  }
-  
-  .card-gradient {
-    @apply bg-gradient-beauty text-white shadow-beauty;
-  }
-  
-  /* Input Components */
-  .input {
-    @apply block w-full px-4 py-3 text-gray-900 placeholder-gray-500 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-beauty-500 focus:border-beauty-500 transition-colors duration-200;
-  }
-  
-  .input-lg {
-    @apply px-6 py-4 text-lg rounded-3xl;
-  }
-  
-  /* Badge Components */
-  .badge {
-    @apply inline-flex items-center px-3 py-1 text-xs font-medium rounded-full;
-  }
-  
-  .badge-beauty {
-    @apply badge bg-beauty-100 text-beauty-800;
-  }
-  
-  .badge-rose {
-    @apply badge bg-rose-100 text-rose-800;
-  }
-  
-  .badge-success {
-    @apply badge bg-success-100 text-success-800;
-  }
-  
-  /* Glass Effect */
-  .glass {
-    @apply bg-white/80 backdrop-blur-lg border border-white/20;
-  }
-  
-  .glass-dark {
-    @apply bg-gray-900/80 backdrop-blur-lg border border-gray-700/20;
-  }
-  
-  /* Gradient Text */
-  .text-gradient {
-    @apply bg-gradient-beauty bg-clip-text text-transparent;
-  }
-  
-  .text-gradient-reverse {
-    @apply bg-gradient-beauty-reverse bg-clip-text text-transparent;
-  }
-  
-  /* Modern Typography */
-  .heading {
-    @apply font-display font-bold leading-tight tracking-tight;
-  }
-  
-  .heading-xl {
-    @apply heading text-5xl lg:text-6xl;
-  }
-  
-  .heading-lg {
-    @apply heading text-4xl lg:text-5xl;
-  }
-  
-  .heading-md {
-    @apply heading text-3xl lg:text-4xl;
-  }
-  
-  .heading-sm {
-    @apply heading text-2xl lg:text-3xl;
-  }
-  
-  .text-body {
-    @apply text-gray-600 leading-relaxed;
-  }
-  
-  .text-body-lg {
-    @apply text-body text-lg;
-  }
-  
-  /* Animation Helpers */
-  .animate-in {
-    @apply animate-slide-up;
-  }
-  
-  .animate-delay-100 {
-    animation-delay: 100ms;
-  }
-  
-  .animate-delay-200 {
-    animation-delay: 200ms;
-  }
-  
-  .animate-delay-300 {
-    animation-delay: 300ms;
-  }
-  
-  .animate-delay-500 {
-    animation-delay: 500ms;
-  }
-  
-  /* Layout Helpers */
-  .container-beauty {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-  
-  .section-padding {
-    @apply py-16 lg:py-24;
-  }
-  
-  .section-padding-sm {
-    @apply py-12 lg:py-16;
-  }
+}
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', sans-serif;
+  line-height: 1.6;
+  color: #1f2937;
+  background: linear-gradient(to bottom right, #faf5ff, #fce7f3, #eff6ff);
 }
