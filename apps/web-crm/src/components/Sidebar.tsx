@@ -5,7 +5,7 @@ import {
   Calendar, 
   Scissors, 
   Users, 
-  UsersRound,
+  Users2,
   Settings,
   HelpCircle,
   Sparkles
@@ -18,7 +18,7 @@ const navigation = [
   { name: 'Kalendarz', href: '/calendar', icon: Calendar },
   { name: 'Usługi', href: '/services', icon: Scissors },
   { name: 'Klienci', href: '/clients', icon: Users },
-  { name: 'Zespół', href: '/team', icon: UsersRound },
+  { name: 'Zespół', href: '/team', icon: Users2 },
 ];
 
 const secondaryNavigation = [
