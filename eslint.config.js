@@ -37,8 +37,9 @@ export default [
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
-        project: ["./tsconfig.base.json", "./apps/*/tsconfig.json", "./packages/*/tsconfig.json"],
-        tsconfigRootDir: __dirname,
+        ecmaFeatures: {
+          jsx: true
+        }
       },
     },
     plugins: {
@@ -53,22 +54,50 @@ export default [
     },
   },
   
+  // React/Vite specific config for web-crm app
+  {
+    files: ["apps/web-crm/**/*.{js,ts,tsx}"],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: true
+        }
+      },
+      globals: {
+        React: "readonly"
+      }
+    },
+    rules: {
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off"
+    }
+  },
+  
   // Next.js specific config for web-booking app
   {
     files: ["apps/web-booking/**/*.{js,ts,tsx}"],
-    ...compat.extends("next/core-web-vitals", "next/typescript")[0],
+    ...compat.extends("next/core-web-vitals")[0],
   },
   
   // Node.js config for API
   {
     files: ["apps/api/**/*.{js,ts}"],
     languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module"
+      },
       globals: {
-        ...globalThis,
         process: "readonly",
         Buffer: "readonly",
         __dirname: "readonly",
         __filename: "readonly",
+        global: "readonly",
+        console: "readonly"
       },
     },
   },
