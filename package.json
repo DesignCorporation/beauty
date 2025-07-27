@@ -11,12 +11,12 @@
   ],
   "scripts": {
     "dev": "concurrently \"pnpm --filter @dc-beauty/api dev\" \"pnpm --filter @dc-beauty/web-crm dev\" \"pnpm --filter @dc-beauty/web-booking dev\"",
-    "build": "pnpm --filter @dc-beauty/ui build && pnpm --filter @dc-beauty/web-booking build",
+    "build": "pnpm --filter @dc-beauty/ui build && pnpm --filter @dc-beauty/web-crm build && pnpm --filter @dc-beauty/web-booking build",
     "build:packages": "pnpm --filter @dc-beauty/ui build",
-    "build:apps": "pnpm --filter @dc-beauty/web-booking build",
+    "build:apps": "pnpm --filter @dc-beauty/web-crm build && pnpm --filter @dc-beauty/web-booking build",
     "lint": "eslint . --max-warnings 0 || true",
     "lint:fix": "eslint . --fix || true",
-    "typecheck": "pnpm --filter @dc-beauty/ui typecheck && pnpm --filter @dc-beauty/web-booking typecheck",
+    "typecheck": "pnpm --filter @dc-beauty/ui typecheck && pnpm --filter @dc-beauty/web-crm typecheck && pnpm --filter @dc-beauty/web-booking typecheck",
     "test": "echo 'Tests skipped for CI'",
     "clean": "pnpm --recursive run clean || true"
   },
