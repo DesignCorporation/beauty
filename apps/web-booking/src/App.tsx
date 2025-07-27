@@ -1,1 +1,362 @@
-import { useState } from 'react';\nimport { Clock, User, Phone, Mail, MapPin, Star, Heart } from 'lucide-react';\n\ninterface Service {\n  id: string;\n  name: string;\n  duration: number;\n  price: number;\n  currency: string;\n  description?: string;\n  category: string;\n}\n\ninterface TimeSlot {\n  id: string;\n  time: string;\n  available: boolean;\n}\n\ninterface BookingFormData {\n  name: string;\n  phone: string;\n  email: string;\n  serviceId: string;\n  date: string;\n  time: string;\n}\n\nconst mockServices: Service[] = [\n  { id: '1', name: 'Strzyżenie damskie', duration: 45, price: 150, currency: 'PLN', category: 'Włosy', description: 'Mycie + strzyżenie + stylizacja' },\n  { id: '2', name: 'Koloryzacja', duration: 120, price: 300, currency: 'PLN', category: 'Włosy', description: 'Pełna koloryzacja włosów' },\n  { id: '3', name: 'Manicure hybrydowy', duration: 60, price: 80, currency: 'PLN', category: 'Paznokcie' },\n  { id: '4', name: 'Regulacja brwi', duration: 30, price: 40, currency: 'PLN', category: 'Brwi i rzęsy' },\n];\n\nconst mockTimeSlots: TimeSlot[] = [\n  { id: '1', time: '09:00', available: true },\n  { id: '2', time: '10:00', available: true },\n  { id: '3', time: '11:00', available: false },\n  { id: '4', time: '12:00', available: true },\n  { id: '5', time: '14:00', available: true },\n  { id: '6', time: '15:00', available: true },\n  { id: '7', time: '16:00', available: false },\n];\n\nfunction App() {\n  const [currentStep, setCurrentStep] = useState(1);\n  const [selectedService, setSelectedService] = useState<Service | null>(null);\n  const [selectedDate, setSelectedDate] = useState('');\n  const [selectedTime, setSelectedTime] = useState('');\n  const [formData, setFormData] = useState<BookingFormData>({\n    name: '',\n    phone: '',\n    email: '',\n    serviceId: '',\n    date: '',\n    time: ''\n  });\n  const [isSubmitting, setIsSubmitting] = useState(false);\n\n  const handleServiceSelect = (service: Service) => {\n    setSelectedService(service);\n    setFormData(prev => ({ ...prev, serviceId: service.id }));\n    setCurrentStep(2);\n  };\n\n  const handleDateSelect = (date: string) => {\n    setSelectedDate(date);\n    setFormData(prev => ({ ...prev, date }));\n    setCurrentStep(3);\n  };\n\n  const handleTimeSelect = (time: string) => {\n    setSelectedTime(time);\n    setFormData(prev => ({ ...prev, time }));\n    setCurrentStep(4);\n  };\n\n  const handleSubmit = async (e: React.FormEvent) => {\n    e.preventDefault();\n    setIsSubmitting(true);\n    \n    await new Promise(resolve => setTimeout(resolve, 2000));\n    \n    alert('Rezerwacja została wysłana! Skontaktujemy się z Tobą wkrótce.');\n    setIsSubmitting(false);\n    \n    setCurrentStep(1);\n    setSelectedService(null);\n    setSelectedDate('');\n    setSelectedTime('');\n    setFormData({\n      name: '',\n      phone: '',\n      email: '',\n      serviceId: '',\n      date: '',\n      time: ''\n    });\n  };\n\n  const generateDates = () => {\n    const dates = [];\n    const today = new Date();\n    for (let i = 1; i <= 14; i++) {\n      const date = new Date(today);\n      date.setDate(today.getDate() + i);\n      dates.push({\n        value: date.toISOString().split('T')[0],\n        label: date.toLocaleDateString('pl-PL', { \n          weekday: 'short', \n          day: 'numeric', \n          month: 'short' \n        })\n      });\n    }\n    return dates;\n  };\n\n  const categories = [...new Set(mockServices.map(s => s.category))];\n\n  return (\n    <div className=\"min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50\">\n      <header className=\"bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50\">\n        <div className=\"max-w-6xl mx-auto px-4 py-4\">\n          <div className=\"flex items-center justify-between\">\n            <div className=\"flex items-center space-x-3\">\n              <div className=\"w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center\">\n                <Heart className=\"w-5 h-5 text-white\" />\n              </div>\n              <h1 className=\"text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent\">\n                Demo Salon\n              </h1>\n            </div>\n            <div className=\"flex items-center space-x-4 text-sm text-gray-600\">\n              <div className=\"flex items-center space-x-1\">\n                <MapPin className=\"w-4 h-4\" />\n                <span>Warszawa</span>\n              </div>\n              <div className=\"flex items-center space-x-1\">\n                <Phone className=\"w-4 h-4\" />\n                <span>+48 123 456 789</span>\n              </div>\n            </div>\n          </div>\n        </div>\n      </header>\n\n      <div className=\"max-w-4xl mx-auto px-4 py-6\">\n        <div className=\"flex items-center justify-center space-x-4 mb-8\">\n          {[1, 2, 3, 4].map((step) => (\n            <div key={step} className=\"flex items-center\">\n              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${\n                currentStep >= step \n                  ? 'bg-purple-600 text-white' \n                  : 'bg-gray-200 text-gray-500'\n              }`}>\n                {step}\n              </div>\n              {step < 4 && (\n                <div className={`w-12 h-0.5 transition-all ${\n                  currentStep > step ? 'bg-purple-600' : 'bg-gray-200'\n                }`} />\n              )}\n            </div>\n          ))}\n        </div>\n\n        <div className=\"bg-white rounded-2xl shadow-xl p-6 lg:p-8\">\n          {currentStep === 1 && (\n            <div>\n              <h2 className=\"text-2xl font-bold text-gray-900 mb-6 text-center\">\n                Wybierz usługę\n              </h2>\n              \n              {categories.map(category => (\n                <div key={category} className=\"mb-8\">\n                  <h3 className=\"text-lg font-semibold text-gray-800 mb-4 flex items-center\">\n                    <Star className=\"w-5 h-5 mr-2 text-purple-600\" />\n                    {category}\n                  </h3>\n                  <div className=\"grid gap-4 md:grid-cols-2\">\n                    {mockServices\n                      .filter(service => service.category === category)\n                      .map(service => (\n                        <div\n                          key={service.id}\n                          onClick={() => handleServiceSelect(service)}\n                          className=\"p-4 border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 cursor-pointer transition-all group\"\n                        >\n                          <div className=\"flex justify-between items-start mb-2\">\n                            <h4 className=\"font-semibold text-gray-900 group-hover:text-purple-700\">\n                              {service.name}\n                            </h4>\n                            <span className=\"text-lg font-bold text-purple-600\">\n                              {service.price} {service.currency}\n                            </span>\n                          </div>\n                          <div className=\"flex items-center text-sm text-gray-600 mb-2\">\n                            <Clock className=\"w-4 h-4 mr-1\" />\n                            <span>{service.duration} min</span>\n                          </div>\n                          {service.description && (\n                            <p className=\"text-sm text-gray-600\">{service.description}</p>\n                          )}\n                        </div>\n                      ))\n                    }\n                  </div>\n                </div>\n              ))}\n            </div>\n          )}\n\n          {currentStep === 2 && selectedService && (\n            <div>\n              <h2 className=\"text-2xl font-bold text-gray-900 mb-6 text-center\">\n                Wybierz datę\n              </h2>\n              \n              <div className=\"bg-purple-50 rounded-xl p-4 mb-6\">\n                <h3 className=\"font-semibold text-gray-900 mb-2\">Wybrana usługa:</h3>\n                <p className=\"text-purple-700\">{selectedService.name} - {selectedService.duration} min - {selectedService.price} {selectedService.currency}</p>\n              </div>\n\n              <div className=\"grid gap-3 md:grid-cols-4 lg:grid-cols-7\">\n                {generateDates().map(date => (\n                  <button\n                    key={date.value}\n                    onClick={() => handleDateSelect(date.value)}\n                    className=\"p-3 border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition-all text-center\"\n                  >\n                    <div className=\"text-sm font-medium text-gray-900\">{date.label}</div>\n                  </button>\n                ))}\n              </div>\n            </div>\n          )}\n\n          {currentStep === 3 && (\n            <div>\n              <h2 className=\"text-2xl font-bold text-gray-900 mb-6 text-center\">\n                Wybierz godzinę\n              </h2>\n              \n              <div className=\"bg-purple-50 rounded-xl p-4 mb-6\">\n                <p className=\"text-purple-700\">\n                  {selectedService?.name} - {selectedDate} - {selectedService?.duration} min\n                </p>\n              </div>\n\n              <div className=\"grid gap-3 md:grid-cols-4 lg:grid-cols-7\">\n                {mockTimeSlots.map(slot => (\n                  <button\n                    key={slot.id}\n                    onClick={() => slot.available && handleTimeSelect(slot.time)}\n                    disabled={!slot.available}\n                    className={`p-3 border-2 rounded-xl transition-all ${\n                      slot.available \n                        ? 'border-gray-200 hover:border-purple-300 hover:bg-purple-50' \n                        : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'\n                    }`}\n                  >\n                    {slot.time}\n                  </button>\n                ))}\n              </div>\n            </div>\n          )}\n\n          {currentStep === 4 && (\n            <div>\n              <h2 className=\"text-2xl font-bold text-gray-900 mb-6 text-center\">\n                Twoje dane kontaktowe\n              </h2>\n              \n              <div className=\"bg-purple-50 rounded-xl p-4 mb-6\">\n                <h3 className=\"font-semibold text-gray-900 mb-2\">Podsumowanie rezerwacji:</h3>\n                <p className=\"text-purple-700\">\n                  {selectedService?.name} - {selectedDate} o {selectedTime} - {selectedService?.price} {selectedService?.currency}\n                </p>\n              </div>\n\n              <form onSubmit={handleSubmit} className=\"space-y-6\">\n                <div>\n                  <label className=\"block text-sm font-medium text-gray-700 mb-2\">\n                    Imię i nazwisko *\n                  </label>\n                  <div className=\"relative\">\n                    <User className=\"w-5 h-5 text-gray-400 absolute left-3 top-3\" />\n                    <input\n                      type=\"text\"\n                      required\n                      value={formData.name}\n                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}\n                      className=\"w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent\"\n                      placeholder=\"Wpisz swoje imię i nazwisko\"\n                    />\n                  </div>\n                </div>\n\n                <div>\n                  <label className=\"block text-sm font-medium text-gray-700 mb-2\">\n                    Numer telefonu *\n                  </label>\n                  <div className=\"relative\">\n                    <Phone className=\"w-5 h-5 text-gray-400 absolute left-3 top-3\" />\n                    <input\n                      type=\"tel\"\n                      required\n                      value={formData.phone}\n                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}\n                      className=\"w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent\"\n                      placeholder=\"+48 123 456 789\"\n                    />\n                  </div>\n                </div>\n\n                <div>\n                  <label className=\"block text-sm font-medium text-gray-700 mb-2\">\n                    Email\n                  </label>\n                  <div className=\"relative\">\n                    <Mail className=\"w-5 h-5 text-gray-400 absolute left-3 top-3\" />\n                    <input\n                      type=\"email\"\n                      value={formData.email}\n                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}\n                      className=\"w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent\"\n                      placeholder=\"twoj@email.com\"\n                    />\n                  </div>\n                </div>\n\n                <button\n                  type=\"submit\"\n                  disabled={isSubmitting}\n                  className=\"w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-4 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed\"\n                >\n                  {isSubmitting ? 'Wysyłanie...' : 'Zarezerwuj wizytę'}\n                </button>\n              </form>\n            </div>\n          )}\n        </div>\n\n        {currentStep > 1 && (\n          <div className=\"text-center mt-6\">\n            <button\n              onClick={() => setCurrentStep(prev => prev - 1)}\n              className=\"text-purple-600 hover:text-purple-700 font-medium\"\n            >\n              ← Wróć do poprzedniego kroku\n            </button>\n          </div>\n        )}\n      </div>\n    </div>\n  );\n}\n\nexport default App;
+import { useState } from 'react';
+import { Clock, User, Phone, Mail, MapPin, Star, Heart } from 'lucide-react';
+
+interface Service {
+  id: string;
+  name: string;
+  duration: number;
+  price: number;
+  currency: string;
+  description?: string;
+  category: string;
+}
+
+interface TimeSlot {
+  id: string;
+  time: string;
+  available: boolean;
+}
+
+interface BookingFormData {
+  name: string;
+  phone: string;
+  email: string;
+  serviceId: string;
+  date: string;
+  time: string;
+}
+
+const mockServices: Service[] = [
+  { id: '1', name: 'Strzyżenie damskie', duration: 45, price: 150, currency: 'PLN', category: 'Włosy', description: 'Mycie + strzyżenie + stylizacja' },
+  { id: '2', name: 'Koloryzacja', duration: 120, price: 300, currency: 'PLN', category: 'Włosy', description: 'Pełna koloryzacja włosów' },
+  { id: '3', name: 'Manicure hybrydowy', duration: 60, price: 80, currency: 'PLN', category: 'Paznokcie' },
+  { id: '4', name: 'Regulacja brwi', duration: 30, price: 40, currency: 'PLN', category: 'Brwi i rzęsy' },
+];
+
+const mockTimeSlots: TimeSlot[] = [
+  { id: '1', time: '09:00', available: true },
+  { id: '2', time: '10:00', available: true },
+  { id: '3', time: '11:00', available: false },
+  { id: '4', time: '12:00', available: true },
+  { id: '5', time: '14:00', available: true },
+  { id: '6', time: '15:00', available: true },
+  { id: '7', time: '16:00', available: false },
+];
+
+function App() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [formData, setFormData] = useState<BookingFormData>({
+    name: '',
+    phone: '',
+    email: '',
+    serviceId: '',
+    date: '',
+    time: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleServiceSelect = (service: Service) => {
+    setSelectedService(service);
+    setFormData(prev => ({ ...prev, serviceId: service.id }));
+    setCurrentStep(2);
+  };
+
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
+    setFormData(prev => ({ ...prev, date }));
+    setCurrentStep(3);
+  };
+
+  const handleTimeSelect = (time: string) => {
+    setSelectedTime(time);
+    setFormData(prev => ({ ...prev, time }));
+    setCurrentStep(4);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    alert('Rezerwacja została wysłana! Skontaktujemy się z Tobą wkrótce.');
+    setIsSubmitting(false);
+    
+    setCurrentStep(1);
+    setSelectedService(null);
+    setSelectedDate('');
+    setSelectedTime('');
+    setFormData({
+      name: '',
+      phone: '',
+      email: '',
+      serviceId: '',
+      date: '',
+      time: ''
+    });
+  };
+
+  const generateDates = () => {
+    const dates = [];
+    const today = new Date();
+    for (let i = 1; i <= 14; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push({
+        value: date.toISOString().split('T')[0],
+        label: date.toLocaleDateString('pl-PL', { 
+          weekday: 'short', 
+          day: 'numeric', 
+          month: 'short' 
+        })
+      });
+    }
+    return dates;
+  };
+
+  const categories = [...new Set(mockServices.map(s => s.category))];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                <Heart className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Demo Salon
+              </h1>
+            </div>
+            <div className="flex items-center space-x-4 text-sm text-gray-600">
+              <div className="flex items-center space-x-1">
+                <MapPin className="w-4 h-4" />
+                <span>Warszawa</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Phone className="w-4 h-4" />
+                <span>+48 123 456 789</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="flex items-center justify-center space-x-4 mb-8">
+          {[1, 2, 3, 4].map((step) => (
+            <div key={step} className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                currentStep >= step 
+                  ? 'bg-purple-600 text-white' 
+                  : 'bg-gray-200 text-gray-500'
+              }`}>
+                {step}
+              </div>
+              {step < 4 && (
+                <div className={`w-12 h-0.5 transition-all ${
+                  currentStep > step ? 'bg-purple-600' : 'bg-gray-200'
+                }`} />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
+          {currentStep === 1 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                Wybierz usługę
+              </h2>
+              
+              {categories.map(category => (
+                <div key={category} className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <Star className="w-5 h-5 mr-2 text-purple-600" />
+                    {category}
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {mockServices
+                      .filter(service => service.category === category)
+                      .map(service => (
+                        <div
+                          key={service.id}
+                          onClick={() => handleServiceSelect(service)}
+                          className="p-4 border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 cursor-pointer transition-all group"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-semibold text-gray-900 group-hover:text-purple-700">
+                              {service.name}
+                            </h4>
+                            <span className="text-lg font-bold text-purple-600">
+                              {service.price} {service.currency}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600 mb-2">
+                            <Clock className="w-4 h-4 mr-1" />
+                            <span>{service.duration} min</span>
+                          </div>
+                          {service.description && (
+                            <p className="text-sm text-gray-600">{service.description}</p>
+                          )}
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {currentStep === 2 && selectedService && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                Wybierz datę
+              </h2>
+              
+              <div className="bg-purple-50 rounded-xl p-4 mb-6">
+                <h3 className="font-semibold text-gray-900 mb-2">Wybrana usługa:</h3>
+                <p className="text-purple-700">{selectedService.name} - {selectedService.duration} min - {selectedService.price} {selectedService.currency}</p>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-4 lg:grid-cols-7">
+                {generateDates().map(date => (
+                  <button
+                    key={date.value}
+                    onClick={() => handleDateSelect(date.value)}
+                    className="p-3 border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition-all text-center"
+                  >
+                    <div className="text-sm font-medium text-gray-900">{date.label}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                Wybierz godzinę
+              </h2>
+              
+              <div className="bg-purple-50 rounded-xl p-4 mb-6">
+                <p className="text-purple-700">
+                  {selectedService?.name} - {selectedDate} - {selectedService?.duration} min
+                </p>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-4 lg:grid-cols-7">
+                {mockTimeSlots.map(slot => (
+                  <button
+                    key={slot.id}
+                    onClick={() => slot.available && handleTimeSelect(slot.time)}
+                    disabled={!slot.available}
+                    className={`p-3 border-2 rounded-xl transition-all ${
+                      slot.available 
+                        ? 'border-gray-200 hover:border-purple-300 hover:bg-purple-50' 
+                        : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {slot.time}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentStep === 4 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                Twoje dane kontaktowe
+              </h2>
+              
+              <div className="bg-purple-50 rounded-xl p-4 mb-6">
+                <h3 className="font-semibold text-gray-900 mb-2">Podsumowanie rezerwacji:</h3>
+                <p className="text-purple-700">
+                  {selectedService?.name} - {selectedDate} o {selectedTime} - {selectedService?.price} {selectedService?.currency}
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Imię i nazwisko *
+                  </label>
+                  <div className="relative">
+                    <User className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="Wpisz swoje imię i nazwisko"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Numer telefonu *
+                  </label>
+                  <div className="relative">
+                    <Phone className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+                    <input
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="+48 123 456 789"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="twoj@email.com"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-4 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Wysyłanie...' : 'Zarezerwuj wizytę'}
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+
+        {currentStep > 1 && (
+          <div className="text-center mt-6">
+            <button
+              onClick={() => setCurrentStep(prev => prev - 1)}
+              className="text-purple-600 hover:text-purple-700 font-medium"
+            >
+              ← Wróć do poprzedniego kroku
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default App;
