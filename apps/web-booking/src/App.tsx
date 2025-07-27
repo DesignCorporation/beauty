@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, User, Phone, Mail, MapPin, Star, Heart, ChevronDown } from 'lucide-react';
-import './index.css';
+import React, { useState } from 'react';
+import { Calendar, Clock, User, Phone, Mail, MapPin, Star, Heart } from 'lucide-react';
 
 interface Service {
   id: string;
@@ -81,13 +80,11 @@ function App() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Симуляция отправки
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     alert('Rezerwacja została wysłana! Skontaktujemy się z Tobą wkrótce.');
     setIsSubmitting(false);
     
-    // Сброс формы
     setCurrentStep(1);
     setSelectedService(null);
     setSelectedDate('');
@@ -124,7 +121,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
-      {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -150,7 +146,6 @@ function App() {
         </div>
       </header>
 
-      {/* Progress Steps */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="flex items-center justify-center space-x-4 mb-8">
           {[1, 2, 3, 4].map((step) => (
@@ -171,9 +166,7 @@ function App() {
           ))}
         </div>
 
-        {/* Step Content */}
         <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8">
-          {/* Step 1: Service Selection */}
           {currentStep === 1 && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
@@ -219,7 +212,6 @@ function App() {
             </div>
           )}
 
-          {/* Step 2: Date Selection */}
           {currentStep === 2 && selectedService && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
@@ -245,7 +237,6 @@ function App() {
             </div>
           )}
 
-          {/* Step 3: Time Selection */}
           {currentStep === 3 && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
@@ -277,7 +268,6 @@ function App() {
             </div>
           )}
 
-          {/* Step 4: Contact Form */}
           {currentStep === 4 && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
@@ -354,7 +344,6 @@ function App() {
           )}
         </div>
 
-        {/* Back Button */}
         {currentStep > 1 && (
           <div className="text-center mt-6">
             <button
