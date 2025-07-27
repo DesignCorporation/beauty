@@ -1,5 +1,5 @@
 import React from 'react';
-import { UsersRound, Plus, Star, Clock } from 'lucide-react';
+import { Users2, Plus, Star, Clock } from 'lucide-react';
 
 export default function TeamPage() {
   const teamMembers = [
