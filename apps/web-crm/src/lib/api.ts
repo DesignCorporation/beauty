@@ -21,7 +21,7 @@ class ApiClient {
     this.instance.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('beauty_token');
-        if (token) {
+        if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
@@ -31,7 +31,7 @@ class ApiClient {
 
     // Response interceptor for error handling
     this.instance.interceptors.response.use(
-      (response: AxiosResponse<ApiResponse>) => response,
+      (response: AxiosResponse<ApiResponse<unknown>>) => response,
       (error: AxiosError<ApiError>) => {
         if (error.response?.status === 401) {
           // Token expired or invalid
@@ -43,27 +43,27 @@ class ApiClient {
     );
   }
 
-  async get<T = any>(url: string, params?: any): Promise<T> {
+  async get<T = unknown>(url: string, params?: Record<string, unknown>): Promise<T> {
     const response = await this.instance.get<ApiResponse<T>>(url, { params });
     return response.data.data;
   }
 
-  async post<T = any>(url: string, data?: any): Promise<T> {
+  async post<T = unknown>(url: string, data?: Record<string, unknown>): Promise<T> {
     const response = await this.instance.post<ApiResponse<T>>(url, data);
     return response.data.data;
   }
 
-  async put<T = any>(url: string, data?: any): Promise<T> {
+  async put<T = unknown>(url: string, data?: Record<string, unknown>): Promise<T> {
     const response = await this.instance.put<ApiResponse<T>>(url, data);
     return response.data.data;
   }
 
-  async delete<T = any>(url: string): Promise<T> {
+  async delete<T = unknown>(url: string): Promise<T> {
     const response = await this.instance.delete<ApiResponse<T>>(url);
     return response.data.data;
   }
 
-  async patch<T = any>(url: string, data?: any): Promise<T> {
+  async patch<T = unknown>(url: string, data?: Record<string, unknown>): Promise<T> {
     const response = await this.instance.patch<ApiResponse<T>>(url, data);
     return response.data.data;
   }
