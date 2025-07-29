@@ -29,14 +29,8 @@ export const useAppointments = ({ date, view, filters, salonId, token }: UseAppo
         ...(filters.statuses.length > 0 && { statuses: filters.statuses.join(',') })
       });
 
-      const response = await api.get(`/api/v1/crm/appointments?${params}`, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      setAppointments(response.data);
+      const response = await api.get(`/crm/appointments?${params}`);
+      setAppointments(response);
     } catch (err) {
       console.error('Failed to fetch appointments:', err);
       setError('Nie udało się załadować zapisów');
@@ -47,11 +41,9 @@ export const useAppointments = ({ date, view, filters, salonId, token }: UseAppo
 
   const rescheduleAppointment = async (appointmentId: string, newStartAt: string, newStaffId?: string) => {
     try {
-      await api.post(`/api/v1/crm/appointments/${appointmentId}/reschedule`, {
+      await api.post(`/crm/appointments/${appointmentId}/reschedule`, {
         startAt: newStartAt,
         staffId: newStaffId
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       // Refresh appointments
@@ -64,10 +56,8 @@ export const useAppointments = ({ date, view, filters, salonId, token }: UseAppo
 
   const updateStatus = async (appointmentId: string, status: AppointmentStatus) => {
     try {
-      await api.patch(`/api/v1/crm/appointments/${appointmentId}/status`, {
+      await api.patch(`/crm/appointments/${appointmentId}/status`, {
         status
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       // Update local state
