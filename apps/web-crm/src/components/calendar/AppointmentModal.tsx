@@ -47,10 +47,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setError(null);
 
     try {
-      const response = await api.get(`/api/v1/crm/appointments/${appointmentId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAppointment(response.data);
+      const response = await api.get(`/crm/appointments/${appointmentId}`);
+      setAppointment(response);
     } catch (err) {
       console.error('Failed to fetch appointment:', err);
       setError('Nie udało się załadować danych wizyty');
@@ -64,10 +62,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
     setSaving(true);
     try {
-      await api.patch(`/api/v1/crm/appointments/${appointment.id}/status`, {
+      await api.patch(`/crm/appointments/${appointment.id}/status`, {
         status: newStatus
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       setAppointment({ ...appointment, status: newStatus });
