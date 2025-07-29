@@ -65,18 +65,26 @@ export default function CalendarPage() {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header with Fresha-style gradient */}
-      <div className="card-header mb-6">
+      {/* Header - FLAT DESIGN */}
+      <div style={{ 
+        backgroundColor: 'var(--pastel-lavender)', 
+        borderRadius: '8px',
+        padding: '24px',
+        marginBottom: '24px',
+        border: '1px solid var(--border-color)'
+      }}>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Kalendarz</h1>
-            <p className="text-purple-100 text-sm">
+            <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+              Kalendarz
+            </h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               Zarządzaj wizytami i dostępnością
             </p>
           </div>
           <button 
             onClick={() => setShowNewAppointment(true)}
-            className="btn-primary interactive"
+            className="btn-primary"
           >
             <Plus className="h-4 w-4 mr-2" />
             Nowa wizyta
@@ -84,24 +92,30 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {/* Navigation with improved styling */}
+      {/* Navigation - FLAT DESIGN */}
       <div className="card mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button 
               onClick={() => navigateDate('prev')}
-              className="p-2 hover:bg-purple-50 rounded-xl transition-all duration-200 text-purple-600 hover:text-purple-700 interactive"
+              className="p-2 rounded-lg transition-colors"
+              style={{ 
+                backgroundColor: 'var(--bg-hover)',
+                color: 'var(--text-primary)' 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-active)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
             
             <div className="flex items-center space-x-3">
-              <h2 className="text-xl font-bold min-w-0" style={{ color: 'var(--purple-primary)' }}>
+              <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 {getDateTitle()}
               </h2>
               <button 
                 onClick={goToToday}
-                className="btn-secondary interactive"
+                className="btn-secondary"
               >
                 Dzisiaj
               </button>
@@ -109,14 +123,20 @@ export default function CalendarPage() {
             
             <button 
               onClick={() => navigateDate('next')}
-              className="p-2 hover:bg-purple-50 rounded-xl transition-all duration-200 text-purple-600 hover:text-purple-700 interactive"
+              className="p-2 rounded-lg transition-colors"
+              style={{ 
+                backgroundColor: 'var(--bg-hover)',
+                color: 'var(--text-primary)' 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-active)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
             >
               <ChevronRight className="h-5 w-5" />
             </button>
           </div>
           
-          {/* View toggle buttons with Fresha styling */}
-          <div className="flex space-x-1 bg-gray-50 p-1 rounded-xl">
+          {/* View toggle buttons - FLAT STYLE */}
+          <div className="flex space-x-1 p-1 rounded-lg" style={{ backgroundColor: 'var(--bg-hover)' }}>
             <button 
               onClick={() => setView('day')}
               className={`view-toggle-btn ${view === 'day' ? 'active' : ''}`}
@@ -139,9 +159,9 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content - FULL WIDTH */}
       <div className="flex-1 flex gap-6 overflow-hidden">
-        {/* Sidebar Filters with improved design */}
+        {/* Sidebar Filters */}
         <div className="w-80 overflow-y-auto">
           <CalendarFilters
             filters={filters}
@@ -151,16 +171,21 @@ export default function CalendarPage() {
           />
         </div>
 
-        {/* Calendar Grid with Fresha styling */}
+        {/* Calendar Grid - FLAT STYLING */}
         <div className="flex-1 overflow-hidden">
           {error ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center card max-w-md">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
-                  <CalendarIcon className="h-8 w-8 text-red-500" />
+                <div 
+                  className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--pastel-pink)' }}
+                >
+                  <CalendarIcon className="h-8 w-8" style={{ color: '#991B1B' }} />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Błąd ładowania</h3>
-                <p className="text-gray-600">{error}</p>
+                <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                  Błąd ładowania
+                </h3>
+                <p style={{ color: 'var(--text-secondary)' }}>{error}</p>
               </div>
             </div>
           ) : (
