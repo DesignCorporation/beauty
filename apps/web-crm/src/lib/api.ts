@@ -31,7 +31,7 @@ class ApiClient {
 
     // Response interceptor for error handling
     this.instance.interceptors.response.use(
-      (response: AxiosResponse<ApiResponse<unknown>>) => response,
+      (response: AxiosResponse<ApiResponse>) => response,
       (error: AxiosError<ApiError>) => {
         if (error.response?.status === 401) {
           // Token expired or invalid
@@ -43,27 +43,27 @@ class ApiClient {
     );
   }
 
-  async get<T = unknown>(url: string, params?: Record<string, unknown>): Promise<T> {
+  async get<T = any>(url: string, params?: any): Promise<T> {
     const response = await this.instance.get<ApiResponse<T>>(url, { params });
     return response.data.data;
   }
 
-  async post<T = unknown>(url: string, data?: Record<string, unknown>): Promise<T> {
+  async post<T = any>(url: string, data?: any): Promise<T> {
     const response = await this.instance.post<ApiResponse<T>>(url, data);
     return response.data.data;
   }
 
-  async put<T = unknown>(url: string, data?: Record<string, unknown>): Promise<T> {
+  async put<T = any>(url: string, data?: any): Promise<T> {
     const response = await this.instance.put<ApiResponse<T>>(url, data);
     return response.data.data;
   }
 
-  async delete<T = unknown>(url: string): Promise<T> {
+  async delete<T = any>(url: string): Promise<T> {
     const response = await this.instance.delete<ApiResponse<T>>(url);
     return response.data.data;
   }
 
-  async patch<T = unknown>(url: string, data?: Record<string, unknown>): Promise<T> {
+  async patch<T = any>(url: string, data?: any): Promise<T> {
     const response = await this.instance.patch<ApiResponse<T>>(url, data);
     return response.data.data;
   }
