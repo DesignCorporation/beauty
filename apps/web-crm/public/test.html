@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty CRM Test</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+        .success { background: #10b981; }
+        .error { background: #ef4444; }
+        .warning { background: #f59e0b; }
+        a {
+            color: #fbbf24;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 Beauty CRM - Deploy Test</h1>
+        <p>This is a test page to verify GitHub Pages deployment is working.</p>
+        
+        <h2>Deployment Status</h2>
+        <div id="status">
+            <span class="status success">✓ Static files deployed</span>
+            <span class="status warning">⏳ React app loading...</span>
+        </div>
+        
+        <h2>Links to Test</h2>
+        <ul>
+            <li><a href="/beauty/">Main Platform</a></li>
+            <li><a href="/beauty/crm/">CRM Dashboard</a> (Current)</li>
+            <li><a href="/beauty/crm/calendar">CRM Calendar</a></li>
+            <li><a href="/beauty/demo-salon">Demo Salon</a></li>
+        </ul>
+
+        <h2>Debug Information</h2>
+        <div id="debug">
+            <p><strong>Current URL:</strong> <span id="current-url"></span></p>
+            <p><strong>Base Path:</strong> /beauty/crm/</p>
+            <p><strong>Expected Files:</strong> index.html, assets/, 404.html</p>
+        </div>
+
+        <div class="card">
+            <h3>What should work:</h3>
+            <ol>
+                <li>Direct access to /beauty/crm/ should load React app</li>
+                <li>Sub-routes like /beauty/crm/calendar should work via SPA routing</li>
+                <li>404.html should handle React Router routes</li>
+                <li>Assets should load from /beauty/crm/assets/</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('current-url').textContent = window.location.href;
+        
+        // Try to detect if React app loaded
+        setTimeout(() => {
+            const reactRoot = document.getElementById('root');
+            if (reactRoot && reactRoot.innerHTML.trim()) {
+                document.querySelector('.warning').className = 'status success';
+                document.querySelector('.warning').textContent = '✓ React app loaded';
+            } else {
+                document.querySelector('.warning').className = 'status error';
+                document.querySelector('.warning').textContent = '✗ React app failed to load';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
