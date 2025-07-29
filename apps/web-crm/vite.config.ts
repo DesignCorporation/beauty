@@ -4,6 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/beauty/crm/',
   server: {
     port: 5173,
     host: true,
