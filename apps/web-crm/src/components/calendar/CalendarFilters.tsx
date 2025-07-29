@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Filter, Users, CheckCircle } from 'lucide-react';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 import type { AppointmentFilters, AppointmentStatus } from '../../types/calendar';
 
 interface CalendarFiltersProps {
