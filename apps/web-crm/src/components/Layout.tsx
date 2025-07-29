@@ -20,9 +20,9 @@ export default function Layout({ children }: LayoutProps) {
         {/* Header */}
         <Header />
         
-        {/* Page content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-          <div className="max-w-7xl mx-auto">
+        {/* Page content with improved spacing */}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-6" style={{ background: 'var(--bg-main)' }}>
+          <div className="content-container animate-fade-in-up">
             {children}
           </div>
         </main>
