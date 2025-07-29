@@ -59,13 +59,23 @@ jobs:
       - name: Build web-booking app
         run: pnpm --filter @dc-beauty/web-booking build
 
+      - name: Build web-crm app
+        run: pnpm --filter @dc-beauty/web-crm build
+
+      - name: Create combined deployment structure
+        run: |
+          mkdir -p deploy
+          cp -r apps/web-booking/dist/* deploy/
+          mkdir -p deploy/crm
+          cp -r apps/web-crm/dist/* deploy/crm/
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/web-booking/dist
+          path: deploy
 
   deploy:
     environment:
