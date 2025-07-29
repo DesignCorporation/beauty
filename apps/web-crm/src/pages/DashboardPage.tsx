@@ -8,28 +8,32 @@ export default function DashboardPage() {
       value: '12', 
       icon: Calendar, 
       change: '+4.75%', 
-      changeType: 'positive' 
+      changeType: 'positive',
+      bgColor: 'var(--pastel-lavender)'
     },
     { 
       name: 'Przychód dziś', 
       value: '2,840 zł', 
       icon: DollarSign, 
       change: '+12.02%', 
-      changeType: 'positive' 
+      changeType: 'positive',
+      bgColor: 'var(--pastel-mint)'
     },
     { 
       name: 'Nowi klienci', 
       value: '3', 
       icon: Users, 
       change: '+1', 
-      changeType: 'positive' 
+      changeType: 'positive',
+      bgColor: 'var(--pastel-peach)'
     },
     { 
       name: 'Avg. czas wizyty', 
       value: '45 min', 
       icon: Clock, 
       change: '-2 min', 
-      changeType: 'positive' 
+      changeType: 'positive',
+      bgColor: 'var(--pastel-blue)'
     },
   ];
 
@@ -42,36 +46,39 @@ export default function DashboardPage() {
 
   return (
     <div>
-      {/* Page header */}
+      {/* Page header - FLAT DESIGN */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+          Dashboard
+        </h1>
+        <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
           Przegląd aktywności w salonie
         </p>
       </div>
 
-      {/* Stats */}
+      {/* Stats - FLAT CARDS */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {stats.map((item) => (
           <div key={item.name} className="card">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-primary-100 rounded-md flex items-center justify-center">
-                  <item.icon className="h-5 w-5 text-primary-600" />
+                <div 
+                  className="h-10 w-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: item.bgColor }}
+                >
+                  <item.icon className="h-5 w-5" style={{ color: 'var(--text-primary)' }} />
                 </div>
               </div>
-              <div className="ml-5 w-0 flex-1">
+              <div className="ml-4 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium truncate" style={{ color: 'var(--text-secondary)' }}>
                     {item.name}
                   </dt>
                   <dd className="flex items-baseline">
-                    <div className="text-2xl font-semibold text-gray-900">
+                    <div className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
                       {item.value}
                     </div>
-                    <div className={`ml-2 flex items-baseline text-sm font-semibold ${
-                      item.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <div className="ml-2 flex items-baseline text-sm font-semibold text-green-600">
                       {item.change}
                     </div>
                   </dd>
@@ -83,35 +90,46 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Appointments */}
+        {/* Recent Appointments - FLAT DESIGN */}
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Dzisiejsze wizyty</h3>
-            <button className="text-sm text-primary-600 hover:text-primary-500">
+            <h3 className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>
+              Dzisiejsze wizyty
+            </h3>
+            <button 
+              className="text-sm font-medium"
+              style={{ color: 'var(--purple-primary)' }}
+            >
               Zobacz wszystkie
             </button>
           </div>
           
           <div className="space-y-3">
             {recentAppointments.map((appointment) => (
-              <div key={appointment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div 
+                key={appointment.id} 
+                className="flex items-center justify-between p-3 rounded-lg"
+                style={{ backgroundColor: 'var(--bg-hover)' }}
+              >
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                     {appointment.client}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                     {appointment.service}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                     {appointment.time}
                   </p>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    appointment.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                    appointment.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
+                  <span 
+                    className={`status-badge ${
+                      appointment.status === 'confirmed' ? 'status-potwierdzona' :
+                      appointment.status === 'in-progress' ? 'status-zakonczona' :
+                      'status-oczekujaca'
+                    }`}
+                  >
                     {appointment.status === 'confirmed' ? 'Potwierdzona' :
                      appointment.status === 'in-progress' ? 'W trakcie' :
                      'Oczekująca'}
@@ -122,9 +140,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - FLAT DESIGN */}
         <div className="card">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Szybkie akcje</h3>
+          <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
+            Szybkie akcje
+          </h3>
           
           <div className="grid grid-cols-2 gap-3">
             <button className="btn-primary">
@@ -141,16 +161,19 @@ export default function DashboardPage() {
             </button>
           </div>
           
-          <div className="mt-6 p-4 bg-primary-50 rounded-lg">
+          <div 
+            className="mt-6 p-4 rounded-lg"
+            style={{ backgroundColor: 'var(--pastel-mint)' }}
+          >
             <div className="flex">
               <div className="flex-shrink-0">
-                <TrendingUp className="h-5 w-5 text-primary-600" />
+                <TrendingUp className="h-5 w-5" style={{ color: 'var(--text-primary)' }} />
               </div>
               <div className="ml-3">
-                <h4 className="text-sm font-medium text-primary-900">
+                <h4 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                   Miesięczny raport
                 </h4>
-                <p className="mt-1 text-sm text-primary-700">
+                <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   Twój salon osiągnął 125% celu na ten miesiąc!
                 </p>
               </div>
