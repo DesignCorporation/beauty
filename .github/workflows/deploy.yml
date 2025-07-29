@@ -73,6 +73,47 @@ jobs:
           mkdir -p deploy/crm
           cp -r apps/web-crm/dist/* deploy/crm/
           
+          # Create 404.html for SPA routing in CRM
+          cp deploy/crm/index.html deploy/crm/404.html
+          
+          # Create root 404.html that handles both apps
+          cat > deploy/404.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Beauty Platform</title>
+            <script>
+              // Handle SPA routing for GitHub Pages
+              (function() {
+                var path = window.location.pathname;
+                
+                // If accessing /beauty/crm/* routes, redirect to CRM app
+                if (path.startsWith('/beauty/crm')) {
+                  // Keep the path for CRM SPA routing
+                  window.location.replace('/beauty/crm/');
+                  return;
+                }
+                
+                // For all other routes, redirect to main booking app
+                var redirect = sessionStorage.redirect;
+                delete sessionStorage.redirect;
+                if (redirect && redirect != location.href) {
+                  history.replaceState(null, null, redirect);
+                } else {
+                  // Default to demo salon
+                  window.location.replace('/beauty/demo-salon');
+                }
+              })();
+            </script>
+          </head>
+          <body>
+            <p>Redirecting...</p>
+          </body>
+          </html>
+          EOF
+          
           # Create index.html that redirects to demo-salon
           cat > deploy/index.html << 'EOF'
           <!DOCTYPE html>
@@ -83,19 +124,21 @@ jobs:
             <title>Beauty Platform</title>
             <meta http-equiv="refresh" content="0; url=/beauty/demo-salon">
             <style>
-              body { font-family: system-ui, sans-serif; text-align: center; padding: 2rem; }
-              .container { max-width: 600px; margin: 0 auto; }
-              .logo { color: #7c3aed; font-size: 2rem; margin-bottom: 1rem; }
-              .links a { display: inline-block; margin: 0.5rem; padding: 0.75rem 1.5rem; 
-                         background: #7c3aed; color: white; text-decoration: none; 
-                         border-radius: 0.5rem; }
+              body { font-family: system-ui, sans-serif; text-align: center; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
+              .container { max-width: 600px; }
+              .logo { font-size: 3rem; margin-bottom: 1rem; }
+              .links a { display: inline-block; margin: 0.5rem; padding: 1rem 2rem; 
+                         background: rgba(255,255,255,0.2); color: white; text-decoration: none; 
+                         border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.3);
+                         transition: all 0.3s ease; }
+              .links a:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
             </style>
           </head>
           <body>
             <div class="container">
-              <div class="logo">💄 Beauty Platform</div>
-              <h1>Redirecting to Demo Salon...</h1>
-              <p>If not redirected automatically, choose:</p>
+              <div class="logo">💄</div>
+              <h1>Beauty Platform</h1>
+              <p>Redirecting to Demo Salon...</p>
               <div class="links">
                 <a href="/beauty/demo-salon">Public Booking</a>
                 <a href="/beauty/crm/">Admin CRM</a>
@@ -111,12 +154,11 @@ jobs:
           </html>
           EOF
           
-          # Create 404.html for SPA routing fallback
-          cp deploy/crm/index.html deploy/crm/404.html
-          
           # List contents for debugging
           echo "=== Deploy structure ==="
           find deploy -type f | head -20
+          echo "=== CRM files ==="
+          ls -la deploy/crm/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
