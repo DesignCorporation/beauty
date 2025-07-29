@@ -65,9 +65,51 @@ jobs:
       - name: Create combined deployment structure
         run: |
           mkdir -p deploy
+          
+          # Copy web-booking files to root
           cp -r apps/web-booking/dist/* deploy/
+          
+          # Copy web-crm files to /crm/ subdirectory
           mkdir -p deploy/crm
           cp -r apps/web-crm/dist/* deploy/crm/
+          
+          # Create index.html that redirects to demo-salon
+          cat > deploy/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Beauty Platform</title>
+            <meta http-equiv="refresh" content="0; url=/beauty/demo-salon">
+            <style>
+              body { font-family: system-ui, sans-serif; text-align: center; padding: 2rem; }
+              .container { max-width: 600px; margin: 0 auto; }
+              .logo { color: #7c3aed; font-size: 2rem; margin-bottom: 1rem; }
+              .links a { display: inline-block; margin: 0.5rem; padding: 0.75rem 1.5rem; 
+                         background: #7c3aed; color: white; text-decoration: none; 
+                         border-radius: 0.5rem; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="logo">💄 Beauty Platform</div>
+              <h1>Redirecting to Demo Salon...</h1>
+              <p>If not redirected automatically, choose:</p>
+              <div class="links">
+                <a href="/beauty/demo-salon">Public Booking</a>
+                <a href="/beauty/crm/">Admin CRM</a>
+              </div>
+            </div>
+            <script>
+              // Fallback redirect
+              setTimeout(() => {
+                window.location.href = '/beauty/demo-salon';
+              }, 2000);
+            </script>
+          </body>
+          </html>
+          EOF
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
