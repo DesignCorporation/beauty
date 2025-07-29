@@ -20,6 +20,12 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
     minify: 'esbuild',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   esbuild: {
     target: 'es2020',
