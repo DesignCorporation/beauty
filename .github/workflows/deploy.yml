@@ -68,6 +68,12 @@ jobs:
           
           echo "=== Building deployment structure ==="
           
+          # Copy static test file
+          if [ -f "static-test.html" ]; then
+            cp static-test.html dist/
+            echo "✓ Static test file copied"
+          fi
+          
           # Copy web-booking files to root if they exist
           if [ -d "apps/web-booking/dist" ]; then
             echo "Copying web-booking files..."
@@ -93,23 +99,43 @@ jobs:
           <html>
           <head>
             <meta charset="utf-8">
-            <title>Beauty Platform - Redirecting...</title>
+            <title>Beauty Platform - 404</title>
+            <style>
+              body { font-family: system-ui, sans-serif; text-align: center; padding: 2rem; background: #f3f4f6; }
+              .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+              a { color: #3b82f6; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
             <script>
-              console.log('404 handler triggered for:', window.location.pathname);
+              console.log('404 page loaded for:', window.location.href);
               
-              // If trying to access CRM routes, redirect to CRM
-              if (window.location.pathname.includes('/crm')) {
-                console.log('Redirecting to CRM app');
-                window.location.replace('/beauty/crm/');
-              } else {
-                console.log('Redirecting to main app');
-                window.location.replace('/beauty/demo-salon');
+              // Simple redirect logic
+              const path = window.location.pathname;
+              console.log('Current path:', path);
+              
+              if (path.includes('/crm')) {
+                console.log('Redirecting to CRM');
+                setTimeout(() => {
+                  window.location.replace('/beauty/crm/');
+                }, 2000);
               }
             </script>
           </head>
           <body>
-            <h1>Redirecting...</h1>
-            <p>If you are not redirected automatically, <a href="/beauty/">click here</a>.</p>
+            <div class="container">
+              <h1>🔍 Page Not Found</h1>
+              <p>The page you're looking for doesn't exist.</p>
+              <p><strong>Current path:</strong> <span id="current-path"></span></p>
+              <p>
+                <a href="/beauty/">🏠 Home</a> | 
+                <a href="/beauty/crm/">⚙️ CRM</a> | 
+                <a href="/beauty/static-test.html">🧪 Test</a>
+              </p>
+              <p><small>Redirecting automatically...</small></p>
+            </div>
+            <script>
+              document.getElementById('current-path').textContent = window.location.pathname;
+            </script>
           </body>
           </html>
           EOF
@@ -183,34 +209,37 @@ jobs:
             <div class="container">
               <div class="logo">💄</div>
               <h1>Beauty Platform</h1>
-              <p>Choose your destination:</p>
+              <p>Platform is live! Choose your destination:</p>
               <div class="links">
                 <a href="/beauty/demo-salon">📅 Public Booking</a>
                 <a href="/beauty/crm/">⚙️ Admin CRM</a>
-                <a href="/beauty/crm/test.html">🔧 Test Page</a>
+                <a href="/beauty/static-test.html">🧪 Test Page</a>
               </div>
               <div class="debug">
-                <strong>Debug Info:</strong><br>
-                Current URL: <span id="current-url"></span><br>
-                Timestamp: <span id="timestamp"></span>
+                <strong>Deployment Info:</strong><br>
+                Build: <span id="build-time"></span><br>
+                URL: <span id="current-url"></span>
               </div>
             </div>
             <script>
               document.getElementById('current-url').textContent = window.location.href;
-              document.getElementById('timestamp').textContent = new Date().toISOString();
+              document.getElementById('build-time').textContent = new Date().toISOString();
             </script>
           </body>
           </html>
           EOF
           
-          echo "=== Final structure ==="
-          find dist -type f | head -20
+          echo "=== Final deployment structure ==="
+          find dist -type f | sort
           echo ""
-          echo "=== File sizes ==="
-          du -sh dist/* 2>/dev/null || echo "No files in dist/"
+          echo "=== File count and sizes ==="
+          echo "Total files: $(find dist -type f | wc -l)"
+          echo "Total size: $(du -sh dist | cut -f1)"
           echo ""
-          echo "=== CRM directory ==="
-          ls -la dist/crm/ 2>/dev/null || echo "CRM directory not found"
+          if [ -d "dist/crm" ]; then
+            echo "CRM files: $(find dist/crm -type f | wc -l)"
+            echo "CRM size: $(du -sh dist/crm | cut -f1)"
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
