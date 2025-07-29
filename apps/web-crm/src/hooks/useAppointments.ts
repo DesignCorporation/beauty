@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api } from '../lib/api';
+import api from '../lib/api';
 import type { CalendarAppointment, CalendarView, AppointmentFilters, AppointmentStatus } from '../types/calendar';
 
 interface UseAppointmentsParams {
