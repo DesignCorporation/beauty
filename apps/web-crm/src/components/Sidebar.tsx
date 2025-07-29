@@ -32,32 +32,47 @@ export default function Sidebar() {
 
   return (
     <div className="sidebar-container">
-      <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
-        {/* Logo and salon info */}
+      <div className="flex-1 flex flex-col min-h-0" style={{ backgroundColor: 'var(--bg-surface)' }}>
+        {/* Logo and salon info - FLAT DESIGN */}
         <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
           <div className="flex items-center flex-shrink-0 px-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-white" />
+                <div 
+                  className="h-8 w-8 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--pastel-lavender)' }}
+                >
+                  <Sparkles className="h-5 w-5" style={{ color: 'var(--text-primary)' }} />
                 </div>
               </div>
               <div className="ml-3">
-                <h1 className="text-lg font-semibold text-gray-900">Beauty CRM</h1>
+                <h1 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  Beauty CRM
+                </h1>
               </div>
             </div>
           </div>
           
           {salon && (
             <div className="mt-5 px-4">
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-sm font-medium text-gray-900">{salon.displayName}</p>
-                <p className="text-xs text-gray-500 uppercase">{salon.plan}</p>
+              <div 
+                className="rounded-lg p-3 border"
+                style={{ 
+                  backgroundColor: 'var(--bg-hover)',
+                  borderColor: 'var(--border-color)'
+                }}
+              >
+                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  {salon.displayName}
+                </p>
+                <p className="text-xs uppercase" style={{ color: 'var(--text-secondary)' }}>
+                  {salon.plan}
+                </p>
               </div>
             </div>
           )}
 
-          {/* Primary Navigation */}
+          {/* Primary Navigation - FLAT STYLE */}
           <nav className="mt-6 flex-1 px-2 space-y-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
@@ -78,8 +93,8 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* Secondary Navigation */}
-        <div className="flex-shrink-0 border-t border-gray-200">
+        {/* Secondary Navigation - FLAT */}
+        <div className="flex-shrink-0" style={{ borderTop: '1px solid var(--border-color)' }}>
           <nav className="px-2 py-4 space-y-1">
             {secondaryNavigation.map((item) => {
               const isActive = location.pathname === item.href;
@@ -100,20 +115,27 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* User info */}
+        {/* User info - FLAT DESIGN */}
         {user && (
-          <div className="flex-shrink-0 border-t border-gray-200 p-4">
+          <div className="flex-shrink-0 p-4" style={{ borderTop: '1px solid var(--border-color)' }}>
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-accent-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-accent-800">
+                <div 
+                  className="h-8 w-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--pastel-peach)' }}
+                >
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.role}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  {user.name}
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  {user.role}
+                </p>
               </div>
             </div>
           </div>
