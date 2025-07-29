@@ -87,11 +87,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = () => {
     localStorage.removeItem('beauty_token');
+    localStorage.removeItem('beauty_demo_user');
     dispatch({ type: 'LOGOUT' });
   };
 
   const refreshUser = async () => {
     try {
+      // Check for demo data first
+      const demoData = localStorage.getItem('beauty_demo_user');
+      if (demoData) {
+        const parsedDemo = JSON.parse(demoData);
+        dispatch({ type: 'AUTH_SUCCESS', payload: parsedDemo });
+        return;
+      }
+
+      // Try real API
       const response = await apiClient.get('/auth/me');
       const { user, salon } = response;
       const token = localStorage.getItem('beauty_token');
@@ -100,14 +110,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
         dispatch({ type: 'AUTH_SUCCESS', payload: { user, salon, token } });
       }
     } catch (error) {
-      dispatch({ type: 'AUTH_FAILURE' });
-      localStorage.removeItem('beauty_token');
+      // If API fails but we have demo data, don't clear it
+      const demoData = localStorage.getItem('beauty_demo_user');
+      if (!demoData) {
+        dispatch({ type: 'AUTH_FAILURE' });
+        localStorage.removeItem('beauty_token');
+      }
     }
   };
 
   useEffect(() => {
     const token = localStorage.getItem('beauty_token');
-    if (token) {
+    const demoData = localStorage.getItem('beauty_demo_user');
+    
+    if (token || demoData) {
       refreshUser();
     } else {
       dispatch({ type: 'SET_LOADING', payload: false });
