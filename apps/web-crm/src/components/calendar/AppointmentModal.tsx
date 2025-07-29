@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Clock, User, Calendar, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
-import { api } from '../../lib/api';
+import api from '../../lib/api';
 import { useTenant } from '../../hooks/useTenant';
 import type { CalendarAppointment, AppointmentStatus } from '../../types/calendar';
 
