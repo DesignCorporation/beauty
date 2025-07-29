@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty Platform - Static Test</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+        }
+        .status { 
+            padding: 0.5rem 1rem; 
+            border-radius: 0.5rem; 
+            margin: 0.5rem 0; 
+            display: inline-block; 
+        }
+        .success { background: #10b981; }
+        .error { background: #ef4444; }
+        .info { background: #3b82f6; }
+        a { color: #fbbf24; }
+        pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Beauty Platform - Deployment Test</h1>
+        
+        <div class="status success">✅ Static files are being served correctly</div>
+        
+        <h2>Navigation Test</h2>
+        <ul>
+            <li><a href="/beauty/">Main Platform Page</a></li>
+            <li><a href="/beauty/crm/">CRM Application</a></li>
+            <li><a href="/beauty/crm/test.html">CRM Test Page</a></li>
+            <li><a href="/beauty/demo-salon">Demo Salon Booking</a></li>
+        </ul>
+
+        <h2>Current Status</h2>
+        <div id="status-info">
+            <div class="status info">Checking deployment...</div>
+        </div>
+
+        <h2>Debug Information</h2>
+        <pre id="debug-info">Loading...</pre>
+
+        <h2>Expected Behavior</h2>
+        <ol>
+            <li><strong>/beauty/</strong> should show main platform page</li>
+            <li><strong>/beauty/crm/</strong> should load React CRM app</li>
+            <li><strong>/beauty/crm/calendar</strong> should work via React Router</li>
+            <li><strong>/beauty/demo-salon</strong> should show booking page</li>
+        </ol>
+    </div>
+
+    <script>
+        // Gather debug information
+        const debugInfo = {
+            'Current URL': window.location.href,
+            'Hostname': window.location.hostname,
+            'Pathname': window.location.pathname,
+            'User Agent': navigator.userAgent,
+            'Timestamp': new Date().toISOString(),
+            'Referrer': document.referrer || 'Direct access'
+        };
+
+        document.getElementById('debug-info').textContent = 
+            Object.entries(debugInfo)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join('\n');
+
+        // Test if we can fetch other pages
+        const statusDiv = document.getElementById('status-info');
+        
+        Promise.all([
+            fetch('/beauty/crm/').then(r => ({ url: '/beauty/crm/', status: r.status, ok: r.ok })),
+            fetch('/beauty/').then(r => ({ url: '/beauty/', status: r.status, ok: r.ok }))
+        ]).then(results => {
+            statusDiv.innerHTML = results.map(result => 
+                `<div class="status ${result.ok ? 'success' : 'error'}">
+                    ${result.url}: ${result.status} ${result.ok ? '✅' : '❌'}
+                </div>`
+            ).join('');
+        }).catch(err => {
+            statusDiv.innerHTML = `<div class="status error">❌ Fetch test failed: ${err.message}</div>`;
+        });
+    </script>
+</body>
+</html>
