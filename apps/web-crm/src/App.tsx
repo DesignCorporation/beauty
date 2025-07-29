@@ -14,7 +14,7 @@ import './index.css';
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router basename="/beauty/crm">
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
