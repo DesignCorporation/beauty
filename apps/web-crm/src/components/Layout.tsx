@@ -11,12 +11,12 @@ export default function Layout({ children }: LayoutProps) {
   const { user, salon } = useAuth();
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="app-layout">
       {/* Sidebar */}
       <Sidebar />
       
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="main-content-area">
         {/* Header */}
         <Header />
         
