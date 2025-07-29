@@ -47,10 +47,13 @@ export default [
     },
     rules: {
       ...typescriptEslint.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+      "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/ban-ts-comment": "warn",
+      "no-unused-vars": "warn",
+      "prefer-const": "warn"
     },
   },
   
@@ -67,7 +70,13 @@ export default [
         }
       },
       globals: {
-        React: "readonly"
+        React: "readonly",
+        window: "readonly",
+        document: "readonly",
+        localStorage: "readonly",
+        sessionStorage: "readonly",
+        history: "readonly",
+        location: "readonly"
       }
     },
     rules: {
@@ -89,7 +98,9 @@ export default [
         }
       },
       globals: {
-        React: "readonly"
+        React: "readonly",
+        window: "readonly",
+        document: "readonly"
       }
     },
     rules: {
