@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Sparkles } from 'lucide-react';
 
 export default function LoginPage() {
   const { login, isLoading } = useAuth();
@@ -22,6 +22,40 @@ export default function LoginPage() {
     }
   };
 
+  const handleDemoLogin = () => {
+    // Create demo user data
+    const demoData = {
+      user: {
+        id: 'demo-user-1',
+        email: 'demo@salon.com',
+        name: 'Demo Administrator',
+        role: 'ADMIN',
+        avatar: null,
+      },
+      salon: {
+        id: 'demo-salon-1',
+        displayName: 'Demo Salon',
+        nip: '0000000000',
+        phone: '+48 123 456 789',
+        email: 'demo@salon.com',
+        website: 'https://demo-salon.com',
+        addressCity: 'Warszawa',
+        addressStreet: 'Marszałkowska 1',
+        primaryLocale: 'pl',
+        plan: 'STARTER',
+        baseCurrency: 'PLN',
+      },
+      token: 'demo-token-12345'
+    };
+
+    // Save to localStorage and trigger auth success
+    localStorage.setItem('beauty_token', demoData.token);
+    localStorage.setItem('beauty_demo_user', JSON.stringify(demoData));
+    
+    // Trigger page reload to reinitialize auth context
+    window.location.reload();
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
@@ -40,7 +74,30 @@ export default function LoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* Demo Login Button */}
+          <div className="mb-6">
+            <button
+              onClick={handleDemoLogin}
+              className="w-full flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-primary-600 to-accent-500 hover:from-primary-700 hover:to-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 shadow-lg transform transition-all hover:scale-105"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Demo Wejście - Zobacz CRM
+            </button>
+            <p className="mt-2 text-xs text-center text-gray-500">
+              Kliknij aby zobaczyć gotowe funkcje CRM bez logowania
+            </p>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">lub zaloguj się normalnie</span>
+            </div>
+          </div>
+
+          <form className="space-y-6 mt-6" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
                 {error}
