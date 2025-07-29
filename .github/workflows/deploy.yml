@@ -110,6 +110,13 @@ jobs:
           </body>
           </html>
           EOF
+          
+          # Create 404.html for SPA routing fallback
+          cp deploy/crm/index.html deploy/crm/404.html
+          
+          # List contents for debugging
+          echo "=== Deploy structure ==="
+          find deploy -type f | head -20
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
