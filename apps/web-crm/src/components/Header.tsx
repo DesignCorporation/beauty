@@ -10,63 +10,109 @@ export default function Header() {
   };
 
   return (
-    <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
-      {/* Mobile menu button */}
+    <div 
+      className="relative z-10 flex-shrink-0 flex h-16"
+      style={{ 
+        backgroundColor: 'var(--bg-surface)',
+        borderBottom: '1px solid var(--border-color)'
+      }}
+    >
+      {/* Mobile menu button - FLAT */}
       <button
         type="button"
-        className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 md:hidden"
+        className="px-4 md:hidden"
+        style={{ 
+          borderRight: '1px solid var(--border-color)',
+          color: 'var(--text-secondary)'
+        }}
       >
         <Menu className="h-6 w-6" />
       </button>
 
-      {/* Search bar */}
+      {/* Search bar - FLAT DESIGN */}
       <div className="flex-1 px-4 flex justify-between">
         <div className="flex-1 flex">
           <div className="w-full flex md:ml-0">
             <label htmlFor="search-field" className="sr-only">
               Search
             </label>
-            <div className="relative w-full text-gray-400 focus-within:text-gray-600">
-              <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
-                <Search className="h-5 w-5" />
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none pl-3">
+                <Search className="h-5 w-5" style={{ color: 'var(--text-secondary)' }} />
               </div>
               <input
                 id="search-field"
-                className="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm"
+                className="input-field pl-10"
                 placeholder="Szukaj klientów, usług..."
                 type="search"
+                style={{
+                  backgroundColor: 'var(--bg-hover)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-color)'
+                }}
               />
             </div>
           </div>
         </div>
 
-        {/* Right side */}
+        {/* Right side - FLAT DESIGN */}
         <div className="ml-4 flex items-center md:ml-6 space-x-4">
-          {/* Notifications */}
+          {/* Notifications - FLAT */}
           <button
             type="button"
-            className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            className="p-2 rounded-lg transition-colors"
+            style={{ 
+              backgroundColor: 'var(--bg-hover)',
+              color: 'var(--text-secondary)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--bg-active)';
+              e.currentTarget.style.color = 'var(--text-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+            }}
           >
-            <Bell className="h-6 w-6" />
+            <Bell className="h-5 w-5" />
           </button>
 
-          {/* User menu */}
+          {/* User menu - FLAT DESIGN */}
           <div className="flex items-center space-x-3">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-700">{user?.name}</p>
-              <p className="text-xs text-gray-500">{user?.role}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                {user?.name}
+              </p>
+              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                {user?.role}
+              </p>
             </div>
             
-            <div className="h-8 w-8 bg-accent-100 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-accent-800">
+            <div 
+              className="h-8 w-8 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: 'var(--pastel-peach)' }}
+            >
+              <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                 {user?.name.charAt(0).toUpperCase()}
               </span>
             </div>
 
             <button
               onClick={handleLogout}
-              className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="p-2 rounded-lg transition-colors"
               title="Wyloguj się"
+              style={{ 
+                backgroundColor: 'var(--bg-hover)',
+                color: 'var(--text-secondary)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--pastel-pink)';
+                e.currentTarget.style.color = '#991B1B';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+                e.currentTarget.style.color = 'var(--text-secondary)';
+              }}
             >
               <LogOut className="h-5 w-5" />
             </button>
