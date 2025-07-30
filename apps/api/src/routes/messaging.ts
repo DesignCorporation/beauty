@@ -137,4 +137,61 @@ router.post('/webhooks/webchat', async (req, res) => {
  */
 router.post('/api/v1/messages/send', requireTenant, async (req, res) => {
   try {
-    const { client
+    const { clientId, channel, message, templateCode } = req.body;
+    const { salonId } = req.tenant!;
+
+    // Validate required fields
+    if (!clientId || !channel || !message) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: clientId, channel, message' 
+      });
+    }
+
+    // Send message through appropriate service
+    let result;
+    switch (channel) {
+      case MessageChannel.TELEGRAM:
+        result = await telegramService.sendToClient({ 
+          salonId, 
+          clientId, 
+          message 
+        });
+        break;
+      case MessageChannel.EMAIL:
+        result = await emailService.sendToClient({ 
+          salonId, 
+          clientId, 
+          message, 
+          templateCode 
+        });
+        break;
+      case MessageChannel.WEB_CHAT:
+        result = await webChatService.sendToClient({ 
+          salonId, 
+          clientId, 
+          message 
+        });
+        break;
+      default:
+        return res.status(400).json({ error: 'Unsupported channel' });
+    }
+
+    // Log the message
+    await messagingService.logMessage({
+      salonId,
+      clientId,
+      channel,
+      direction: MessageDirection.OUT,
+      rawText: message,
+      templateCode,
+      status: result.success ? 'SENT' : 'FAILED'
+    });
+
+    res.json({ success: result.success, messageId: result.messageId });
+  } catch (error) {
+    console.error('Send message error:', error);
+    res.status(500).json({ error: 'Failed to send message' });
+  }
+});
+
+export default router;
