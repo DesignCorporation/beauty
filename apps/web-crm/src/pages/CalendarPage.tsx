@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { format, addDays, subDays, addWeeks, subWeeks, startOfWeek } from 'date-fns';
-import { pl } from 'date-fns/locale';
 import { CalendarGrid } from '../components/calendar/CalendarGrid';
 import { CalendarFilters } from '../components/calendar/CalendarFilters';
 import { AppointmentModal } from '../components/calendar/AppointmentModal';
@@ -49,25 +48,18 @@ export default function CalendarPage() {
   const getDateTitle = () => {
     switch (view) {
       case 'day':
-        return format(currentDate, 'EEEE, d MMMM yyyy', { locale: pl });
+        return format(currentDate, 'EEEE, d MMMM yyyy');
       case 'week':
         const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-        return format(weekStart, 'MMMM yyyy', { locale: pl });
+        return format(weekStart, 'MMMM yyyy');
       default:
-        return format(currentDate, 'MMMM yyyy', { locale: pl });
+        return format(currentDate, 'MMMM yyyy');
     }
   };
 
   const handleSlotClick = (datetime: Date) => {
     setNewAppointmentSlot(datetime);
     setShowNewAppointment(true);
-  };
-
-  const handleNewAppointmentSuccess = () => {
-    // Refresh appointments after successful creation
-    refetch();
-    setShowNewAppointment(false);
-    setNewAppointmentSlot(null);
   };
 
   const handleUpdateAppointment = async (appointmentId: string, status: any) => {
@@ -101,7 +93,7 @@ export default function CalendarPage() {
           </div>
           <button 
             onClick={() => setShowNewAppointment(true)}
-            className="btn-primary"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
           >
             <Plus className="h-4 w-4 mr-2" />
             Nowa wizyta
@@ -110,29 +102,23 @@ export default function CalendarPage() {
       </div>
 
       {/* Navigation - FLAT DESIGN */}
-      <div className="card mb-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button 
               onClick={() => navigateDate('prev')}
-              className="p-2 rounded-lg transition-colors"
-              style={{ 
-                backgroundColor: 'var(--bg-hover)',
-                color: 'var(--text-primary)' 
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-active)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
+              className="p-2 rounded-lg transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
             
             <div className="flex items-center space-x-3">
-              <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              <h2 className="text-xl font-bold text-gray-900">
                 {getDateTitle()}
               </h2>
               <button 
                 onClick={goToToday}
-                className="btn-secondary"
+                className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
               >
                 Dzisiaj
               </button>
@@ -140,35 +126,41 @@ export default function CalendarPage() {
             
             <button 
               onClick={() => navigateDate('next')}
-              className="p-2 rounded-lg transition-colors"
-              style={{ 
-                backgroundColor: 'var(--bg-hover)',
-                color: 'var(--text-primary)' 
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-active)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
+              className="p-2 rounded-lg transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
           </div>
           
           {/* View toggle buttons - FLAT STYLE */}
-          <div className="flex space-x-1 p-1 rounded-lg" style={{ backgroundColor: 'var(--bg-hover)' }}>
+          <div className="flex space-x-1 p-1 rounded-lg bg-gray-100">
             <button 
               onClick={() => setView('day')}
-              className={`view-toggle-btn ${view === 'day' ? 'active' : ''}`}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                view === 'day' 
+                  ? 'bg-white text-blue-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
             >
               Dzień
             </button>
             <button 
               onClick={() => setView('week')}
-              className={`view-toggle-btn ${view === 'week' ? 'active' : ''}`}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                view === 'week' 
+                  ? 'bg-white text-blue-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
             >
               Tydzień
             </button>
             <button 
               onClick={() => setView('month')}
-              className={`view-toggle-btn ${view === 'month' ? 'active' : ''}`}
+              className={`px-3 py-1 text-sm rounded transition-colors ${
+                view === 'month' 
+                  ? 'bg-white text-blue-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
             >
               Miesiąc
             </button>
@@ -192,20 +184,17 @@ export default function CalendarPage() {
         <div className="flex-1 overflow-hidden">
           {error ? (
             <div className="h-full flex items-center justify-center">
-              <div className="text-center card max-w-md">
-                <div 
-                  className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: 'var(--pastel-pink)' }}
-                >
-                  <CalendarIcon className="h-8 w-8" style={{ color: '#991B1B' }} />
+              <div className="text-center bg-white rounded-lg border border-gray-200 p-8 max-w-md">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                  <CalendarIcon className="h-8 w-8 text-red-600" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                <h3 className="text-lg font-semibold mb-2 text-gray-900">
                   Błąd ładowania
                 </h3>
-                <p style={{ color: 'var(--text-secondary)' }}>{error}</p>
+                <p className="text-gray-600 mb-4">{error}</p>
                 <button
                   onClick={refetch}
-                  className="btn-secondary mt-4"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Spróbuj ponownie
                 </button>
