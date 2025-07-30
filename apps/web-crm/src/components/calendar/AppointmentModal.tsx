@@ -122,7 +122,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setError(null);
 
     try {
-      const response = await api.get(`/api/v1/appointments/${appointmentId}`);
+      const response = await api.get(`/crm/appointments/${appointmentId}`);
       setAppointment(response);
     } catch (err) {
       console.error('Failed to fetch appointment:', err);
@@ -138,9 +138,9 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setLoadingData(true);
     try {
       const [clientsRes, servicesRes, staffRes] = await Promise.all([
-        api.get('/api/v1/clients'),
-        api.get('/api/v1/services'),
-        api.get('/api/v1/staff')
+        api.get('/crm/clients'),
+        api.get('/crm/services'),
+        api.get('/crm/staff')
       ]);
 
       setClients(clientsRes.data || clientsRes);
@@ -160,7 +160,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
     setSaving(true);
     try {
-      await api.patch(`/api/v1/appointments/${appointment.id}/status`, {
+      await api.patch(`/crm/appointments/${appointment.id}/status`, {
         status: newStatus
       });
 
@@ -192,7 +192,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         notes: formData.notes || undefined
       };
 
-      await api.post('/api/v1/appointments', appointmentData);
+      await api.post('/crm/appointments', appointmentData);
       
       success('Wizyta została pomyślnie utworzona');
       onUpdate('new', 'CONFIRMED');
