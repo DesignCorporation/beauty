@@ -21,7 +21,7 @@ export default function CalendarPage() {
   const [newAppointmentSlot, setNewAppointmentSlot] = useState<Date | null>(null);
   
   const { salonId, token } = useTenant();
-  const { appointments, loading, error, rescheduleAppointment, updateStatus } = useAppointments({
+  const { appointments, loading, error, rescheduleAppointment, updateStatus, refetch } = useAppointments({
     date: currentDate,
     view,
     filters,
@@ -61,6 +61,23 @@ export default function CalendarPage() {
   const handleSlotClick = (datetime: Date) => {
     setNewAppointmentSlot(datetime);
     setShowNewAppointment(true);
+  };
+
+  const handleNewAppointmentSuccess = () => {
+    // Refresh appointments after successful creation
+    refetch();
+    setShowNewAppointment(false);
+    setNewAppointmentSlot(null);
+  };
+
+  const handleUpdateAppointment = async (appointmentId: string, status: any) => {
+    if (appointmentId === 'new') {
+      // This is a new appointment, refresh the calendar
+      await refetch();
+    } else {
+      // This is an existing appointment status update
+      await updateStatus(appointmentId, status);
+    }
   };
 
   return (
@@ -186,6 +203,12 @@ export default function CalendarPage() {
                   Błąd ładowania
                 </h3>
                 <p style={{ color: 'var(--text-secondary)' }}>{error}</p>
+                <button
+                  onClick={refetch}
+                  className="btn-secondary mt-4"
+                >
+                  Spróbuj ponownie
+                </button>
               </div>
             </div>
           ) : (
@@ -204,12 +227,12 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {/* Appointment Modal */}
+      {/* Existing Appointment Modal */}
       {selectedAppointment && (
         <AppointmentModal
           appointmentId={selectedAppointment}
           onClose={() => setSelectedAppointment(null)}
-          onUpdate={updateStatus}
+          onUpdate={handleUpdateAppointment}
         />
       )}
 
@@ -222,7 +245,7 @@ export default function CalendarPage() {
             setShowNewAppointment(false);
             setNewAppointmentSlot(null);
           }}
-          onUpdate={updateStatus}
+          onUpdate={handleUpdateAppointment}
         />
       )}
     </div>
