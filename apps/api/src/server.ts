@@ -12,6 +12,7 @@ import tenantExampleRouter from './routes/tenantExample';
 import publicBookingRouter from './routes/publicBooking'; // Legacy - to be replaced
 import publicRoutesV1 from './routes/public'; // TP-07: New public booking API
 import n8nInternalRouter from './routes/n8nInternal'; // TP-08: n8n workflow integration
+import crmRouter from './routes/crm'; // CRM API routes for web-crm frontend
 
 export const createServer = () => {
   const app = express();
@@ -66,6 +67,7 @@ export const createServer = () => {
       endpoints: {
         health: '/health',
         services: '/api/v1/services',
+        crm: '/crm/* (CRM endpoints)',
         public: '/public/:slug/*',
         examples: '/api/v1/examples',
         internal: '/internal/* (n8n workflows)'
@@ -85,6 +87,9 @@ export const createServer = () => {
 
   // n8n Internal API routes (TP-08: No tenant middleware, uses API key auth)
   app.use('/internal', n8nInternalRouter);
+
+  // CRM API routes (private, tenant-scoped, for web-crm frontend)
+  app.use('/crm', crmRouter);
 
   // API v1 routes (private, tenant-scoped)
   app.use('/api/v1/services', servicesRouter);
