@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Clock, User, Calendar, DollarSign } from 'lucide-react';
-import { format } from 'date-fns';
+import { X, Clock, User, Calendar, DollarSign, Search, UserPlus, Briefcase, Users } from 'lucide-react';
+import { format, addMinutes } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import api from '../../lib/api';
 import { useTenant } from '../../hooks/useTenant';
@@ -11,6 +11,39 @@ interface AppointmentModalProps {
   initialDate?: Date | null;
   onClose: () => void;
   onUpdate: (appointmentId: string, status: AppointmentStatus) => void;
+}
+
+interface Client {
+  id: string;
+  name: string;
+  phone?: string;
+  email?: string;
+}
+
+interface Service {
+  id: string;
+  baseName: string;
+  durationMin: number;
+  priceAmount: number;
+  priceCurrency: string;
+  category?: string;
+}
+
+interface Staff {
+  id: string;
+  name: string;
+  role: string;
+  active: boolean;
+}
+
+interface NewAppointmentData {
+  clientId: string;
+  serviceIds: string[];
+  staffId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  notes?: string;
 }
 
 const statusOptions = [
@@ -30,15 +63,56 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Data for new appointments
+  const [clients, setClients] = useState<Client[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [staff, setStaff] = useState<Staff[]>([]);
+  const [loadingData, setLoadingData] = useState(false);
+  
+  // New appointment form state
+  const [formData, setFormData] = useState<NewAppointmentData>({
+    clientId: '',
+    serviceIds: [],
+    staffId: '',
+    date: initialDate ? format(initialDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+    startTime: initialDate ? format(initialDate, 'HH:mm') : '09:00',
+    endTime: initialDate ? format(addMinutes(initialDate, 60), 'HH:mm') : '10:00',
+    notes: ''
+  });
+  
+  // Search states
+  const [clientSearch, setClientSearch] = useState('');
+  const [serviceSearch, setServiceSearch] = useState('');
+  
   const { token } = useTenant();
-
   const isNewAppointment = !appointmentId;
 
   useEffect(() => {
     if (appointmentId && token) {
       fetchAppointment();
+    } else if (isNewAppointment && token) {
+      fetchFormData();
     }
   }, [appointmentId, token]);
+
+  useEffect(() => {
+    // Auto-calculate end time based on selected services
+    if (formData.serviceIds.length > 0) {
+      const totalDuration = formData.serviceIds.reduce((total, serviceId) => {
+        const service = services.find(s => s.id === serviceId);
+        return total + (service?.durationMin || 0);
+      }, 0);
+      
+      const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
+      const endDateTime = addMinutes(startDateTime, totalDuration);
+      
+      setFormData(prev => ({
+        ...prev,
+        endTime: format(endDateTime, 'HH:mm')
+      }));
+    }
+  }, [formData.serviceIds, formData.startTime, formData.date, services]);
 
   const fetchAppointment = async () => {
     if (!appointmentId || !token) return;
@@ -54,6 +128,28 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
       setError('Nie udało się załadować danych wizyty');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFormData = async () => {
+    if (!token) return;
+
+    setLoadingData(true);
+    try {
+      const [clientsRes, servicesRes, staffRes] = await Promise.all([
+        api.get('/api/v1/clients'),
+        api.get('/api/v1/services'),
+        api.get('/api/v1/staff')
+      ]);
+
+      setClients(clientsRes.data || clientsRes);
+      setServices(servicesRes.data || servicesRes);
+      setStaff((staffRes.data || staffRes).filter((s: Staff) => s.active));
+    } catch (err) {
+      console.error('Failed to fetch form data:', err);
+      setError('Nie udało się załadować danych formularza');
+    } finally {
+      setLoadingData(false);
     }
   };
 
@@ -76,6 +172,69 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     }
   };
 
+  const handleCreateAppointment = async () => {
+    if (!token || !validateForm()) return;
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const appointmentData = {
+        clientId: formData.clientId,
+        serviceIds: formData.serviceIds,
+        staffId: formData.staffId,
+        startAt: new Date(`${formData.date}T${formData.startTime}`).toISOString(),
+        endAt: new Date(`${formData.date}T${formData.endTime}`).toISOString(),
+        notes: formData.notes || undefined
+      };
+
+      await api.post('/api/v1/appointments', appointmentData);
+      
+      // Refresh calendar by calling onUpdate with dummy values
+      onUpdate('new', 'CONFIRMED');
+      onClose();
+    } catch (err) {
+      console.error('Failed to create appointment:', err);
+      setError('Nie udało się utworzyć wizyty');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const validateForm = (): boolean => {
+    if (!formData.clientId) {
+      setError('Wybierz klienta');
+      return false;
+    }
+    if (formData.serviceIds.length === 0) {
+      setError('Wybierz przynajmniej jedną usługę');
+      return false;
+    }
+    if (!formData.staffId) {
+      setError('Wybierz pracownika');
+      return false;
+    }
+    if (!formData.date || !formData.startTime) {
+      setError('Wybierz datę i czas');
+      return false;
+    }
+    return true;
+  };
+
+  const filteredClients = clients.filter(client =>
+    client.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+    (client.phone && client.phone.includes(clientSearch))
+  );
+
+  const filteredServices = services.filter(service =>
+    service.baseName.toLowerCase().includes(serviceSearch.toLowerCase()) ||
+    (service.category && service.category.toLowerCase().includes(serviceSearch.toLowerCase()))
+  );
+
+  const selectedServices = services.filter(s => formData.serviceIds.includes(s.id));
+  const totalPrice = selectedServices.reduce((sum, s) => sum + s.priceAmount, 0);
+  const totalDuration = selectedServices.reduce((sum, s) => sum + s.durationMin, 0);
+
   const formatDateTime = (datetime: string) => {
     return format(new Date(datetime), 'EEEE, d MMMM yyyy · HH:mm', { locale: pl });
   };
@@ -89,7 +248,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
@@ -104,33 +263,246 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto">
-          {loading ? (
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          {loading || loadingData ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
           ) : error ? (
             <div className="text-center py-8">
-              <div className="text-red-600 mb-2">{error}</div>
+              <div className="text-red-600 mb-4 p-4 bg-red-50 rounded-lg">{error}</div>
               <button
-                onClick={fetchAppointment}
+                onClick={() => {
+                  setError(null);
+                  isNewAppointment ? fetchFormData() : fetchAppointment();
+                }}
                 className="btn-secondary"
               >
                 Spróbuj ponownie
               </button>
             </div>
           ) : isNewAppointment ? (
-            <div className="text-center py-8">
-              <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Nowa wizyta</h3>
-              <p className="text-gray-500 mb-4">
-                {initialDate && `Data: ${format(initialDate, 'EEEE, d MMMM yyyy · HH:mm', { locale: pl })}`}
-              </p>
-              <p className="text-sm text-gray-500">
-                Funkcja dodawania nowych wizyt będzie dostępna wkrótce
-              </p>
+            /* NEW APPOINTMENT FORM */
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left Column - Form */}
+              <div className="space-y-6">
+                {/* Client Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <User className="w-4 h-4 inline mr-1" />
+                    Klient *
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Szukaj klienta..."
+                      value={clientSearch}
+                      onChange={(e) => setClientSearch(e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="mt-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg">
+                    {filteredClients.map((client) => (
+                      <button
+                        key={client.id}
+                        onClick={() => setFormData(prev => ({ ...prev, clientId: client.id }))}
+                        className={`w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${
+                          formData.clientId === client.id ? 'bg-blue-50 text-blue-700' : ''
+                        }`}
+                      >
+                        <div className="font-medium">{client.name}</div>
+                        {client.phone && <div className="text-sm text-gray-500">{client.phone}</div>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Service Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Briefcase className="w-4 h-4 inline mr-1" />
+                    Usługi *
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Szukaj usługi..."
+                      value={serviceSearch}
+                      onChange={(e) => setServiceSearch(e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="mt-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg">
+                    {filteredServices.map((service) => (
+                      <button
+                        key={service.id}
+                        onClick={() => {
+                          const isSelected = formData.serviceIds.includes(service.id);
+                          setFormData(prev => ({
+                            ...prev,
+                            serviceIds: isSelected
+                              ? prev.serviceIds.filter(id => id !== service.id)
+                              : [...prev.serviceIds, service.id]
+                          }));
+                        }}
+                        className={`w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${
+                          formData.serviceIds.includes(service.id) ? 'bg-green-50 text-green-700' : ''
+                        }`}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="font-medium">{service.baseName}</div>
+                            <div className="text-sm text-gray-500">
+                              {service.durationMin} min • {formatPrice(service.priceAmount, service.priceCurrency)}
+                            </div>
+                          </div>
+                          {formData.serviceIds.includes(service.id) && (
+                            <div className="text-green-600 font-medium">✓</div>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Staff Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Users className="w-4 h-4 inline mr-1" />
+                    Pracownik *
+                  </label>
+                  <select
+                    value={formData.staffId}
+                    onChange={(e) => setFormData(prev => ({ ...prev, staffId: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Wybierz pracownika</option>
+                    {staff.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.name} ({member.role})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Date and Time */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Calendar className="w-4 h-4 inline mr-1" />
+                      Data *
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Clock className="w-4 h-4 inline mr-1" />
+                      Godzina *
+                    </label>
+                    <input
+                      type="time"
+                      value={formData.startTime}
+                      onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Notatki
+                  </label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder="Dodatkowe informacje..."
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Right Column - Summary */}
+              <div className="space-y-6">
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Podsumowanie wizyty</h3>
+                  
+                  {/* Selected Client */}
+                  {formData.clientId && (
+                    <div className="mb-4">
+                      <div className="text-sm text-gray-500">Klient</div>
+                      <div className="font-medium">
+                        {clients.find(c => c.id === formData.clientId)?.name}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Selected Services */}
+                  {selectedServices.length > 0 && (
+                    <div className="mb-4">
+                      <div className="text-sm text-gray-500 mb-2">Usługi</div>
+                      <div className="space-y-1">
+                        {selectedServices.map((service) => (
+                          <div key={service.id} className="flex justify-between text-sm">
+                            <span>{service.baseName}</span>
+                            <span>{formatPrice(service.priceAmount, service.priceCurrency)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Selected Staff */}
+                  {formData.staffId && (
+                    <div className="mb-4">
+                      <div className="text-sm text-gray-500">Pracownik</div>
+                      <div className="font-medium">
+                        {staff.find(s => s.id === formData.staffId)?.name}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Date & Time */}
+                  {formData.date && formData.startTime && (
+                    <div className="mb-4">
+                      <div className="text-sm text-gray-500">Data i czas</div>
+                      <div className="font-medium">
+                        {format(new Date(`${formData.date}T${formData.startTime}`), 'EEEE, d MMMM yyyy · HH:mm', { locale: pl })}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Zakończenie: {formData.endTime}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Duration & Price */}
+                  {selectedServices.length > 0 && (
+                    <div className="pt-4 border-t border-gray-200">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-500">Czas trwania</span>
+                        <span className="font-medium">{totalDuration} min</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">Łączna cena</span>
+                        <span className="text-lg font-bold">
+                          {formatPrice(totalPrice, selectedServices[0]?.priceCurrency || 'PLN')}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           ) : appointment ? (
+            /* EXISTING APPOINTMENT VIEW */
             <div className="space-y-6">
               {/* Client Info */}
               <div className="flex items-start space-x-3">
@@ -228,9 +600,17 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
             onClick={onClose}
             className="btn-secondary"
           >
-            Zamknij
+            Anuluj
           </button>
-          {!isNewAppointment && appointment && (
+          {isNewAppointment ? (
+            <button
+              onClick={handleCreateAppointment}
+              disabled={saving || !validateForm()}
+              className="btn-primary"
+            >
+              {saving ? 'Zapisywanie...' : 'Utwórz wizytę'}
+            </button>
+          ) : appointment && (
             <button
               className="btn-primary"
               disabled={saving}
