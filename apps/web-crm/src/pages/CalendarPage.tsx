@@ -207,7 +207,7 @@ export default function CalendarPage() {
             <CalendarGrid
               view={view}
               currentDate={currentDate}
-              appointments={appointments || []} {/* ALWAYS PROVIDE ARRAY */}
+              appointments={appointments || []}
               onAppointmentClick={setSelectedAppointment}
               onSlotClick={handleSlotClick}
               onAppointmentDrop={rescheduleAppointment}
