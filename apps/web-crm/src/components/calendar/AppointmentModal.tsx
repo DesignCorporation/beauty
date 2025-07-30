@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Clock, User, Calendar, DollarSign, Search, UserPlus, Briefcase, Users } from 'lucide-react';
+import { X, Clock, User, Calendar, DollarSign, Search, Briefcase, Users } from 'lucide-react';
 import { format, addMinutes } from 'date-fns';
-import { pl } from 'date-fns/locale';
 import api from '../../lib/api';
 import { useTenant } from '../../hooks/useTenant';
 import { useToast } from '../../contexts/ToastContext';
@@ -246,7 +245,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const totalDuration = selectedServices.reduce((sum, s) => sum + s.durationMin, 0);
 
   const formatDateTime = (datetime: string) => {
-    return format(new Date(datetime), 'EEEE, d MMMM yyyy · HH:mm', { locale: pl });
+    return format(new Date(datetime), 'EEEE, d MMMM yyyy · HH:mm');
   };
 
   const formatPrice = (price: number, currency: string) => {
@@ -254,6 +253,15 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
       style: 'currency',
       currency: currency
     }).format(price);
+  };
+
+  const formatDateTimeDisplay = (date: string, time: string) => {
+    try {
+      const dateTime = new Date(`${date}T${time}`);
+      return format(dateTime, 'EEEE, d MMMM yyyy · HH:mm');
+    } catch {
+      return `${date} ${time}`;
+    }
   };
 
   return (
@@ -277,6 +285,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
           {loading || loadingData ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-2">Ładowanie...</span>
             </div>
           ) : error ? (
             <div className="text-center py-8">
@@ -485,7 +494,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                     <div className="mb-4">
                       <div className="text-sm text-gray-500">Data i czas</div>
                       <div className="font-medium">
-                        {format(new Date(`${formData.date}T${formData.startTime}`), 'EEEE, d MMMM yyyy · HH:mm', { locale: pl })}
+                        {formatDateTimeDisplay(formData.date, formData.startTime)}
                       </div>
                       <div className="text-sm text-gray-500">
                         Zakończenie: {formData.endTime}
@@ -601,28 +610,32 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </div>
               </div>
             </div>
-          ) : null}
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500">Brak danych do wyświetlenia</p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
         <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
           <button
             onClick={onClose}
-            className="btn-secondary"
+            className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
           >
             Anuluj
           </button>
           {isNewAppointment ? (
             <button
               onClick={handleCreateAppointment}
-              disabled={saving || !validateForm()}
-              className="btn-primary"
+              disabled={saving}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               {saving ? 'Zapisywanie...' : 'Utwórz wizytę'}
             </button>
           ) : appointment && (
             <button
-              className="btn-primary"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
               disabled={saving}
             >
               {saving ? 'Zapisywanie...' : 'Edytuj wizytę'}
