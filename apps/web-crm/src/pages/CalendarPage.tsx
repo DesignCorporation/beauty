@@ -6,42 +6,51 @@ import { CalendarFilters } from '../components/calendar/CalendarFilters';
 import { AppointmentModal } from '../components/calendar/AppointmentModal';
 import { useAppointments } from '../hooks/useAppointments';
 import { useTenant } from '../hooks/useTenant';
-import type { CalendarView, AppointmentFilters } from '../types/calendar';
+import type { CalendarView, AppointmentFilters, CalendarAppointment } from '../types/calendar';
 
 // ДЕМО записи для календаря (временные для тестирования)
-const demoAppointments = [
+const demoAppointments: CalendarAppointment[] = [
   {
     id: 'demo-1',
+    clientId: 'demo-client-1',
     clientName: 'Anna Kowalska',
+    serviceIds: ['demo-service-1'],
     serviceNames: ['Strzyżenie damskie'],
+    staffId: 'demo-staff-1',
     staffName: 'Magdalena',
     startAt: '2025-07-30T10:00:00Z',
     endAt: '2025-07-30T11:00:00Z',
-    status: 'CONFIRMED' as const,
+    status: 'CONFIRMED',
     price: 35,
     currency: 'PLN',
     notes: ''
   },
   {
     id: 'demo-2',
-    clientName: 'Maria Nowak', 
+    clientId: 'demo-client-2',
+    clientName: 'Maria Nowak',
+    serviceIds: ['demo-service-2'],
     serviceNames: ['Manicure hybrydowy'],
+    staffId: 'demo-staff-2',
     staffName: 'Anna',
     startAt: '2025-07-30T14:00:00Z',
     endAt: '2025-07-30T15:00:00Z',
-    status: 'PENDING' as const,
+    status: 'PENDING',
     price: 30,
     currency: 'PLN',
     notes: ''
   },
   {
     id: 'demo-3',
+    clientId: 'demo-client-3',
     clientName: 'Katarzyna Wiśniewska',
+    serviceIds: ['demo-service-3'],
     serviceNames: ['Koloryzacja pełna'],
+    staffId: 'demo-staff-1',
     staffName: 'Magdalena',
-    startAt: '2025-07-31T09:00:00Z', 
+    startAt: '2025-07-31T09:00:00Z',
     endAt: '2025-07-31T11:00:00Z',
-    status: 'CONFIRMED' as const,
+    status: 'CONFIRMED',
     price: 70,
     currency: 'PLN',
     notes: ''
