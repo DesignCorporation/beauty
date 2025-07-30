@@ -293,7 +293,11 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               <button
                 onClick={() => {
                   setError(null);
-                  isNewAppointment ? fetchFormData() : fetchAppointment();
+                  if (isNewAppointment) {
+                    fetchFormData();
+                  } else {
+                    fetchAppointment();
+                  }
                 }}
                 className="btn-secondary"
               >
