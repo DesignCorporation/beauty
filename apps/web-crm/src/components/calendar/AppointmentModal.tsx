@@ -4,6 +4,7 @@ import { format, addMinutes } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import api from '../../lib/api';
 import { useTenant } from '../../hooks/useTenant';
+import { useToast } from '../../contexts/ToastContext';
 import type { CalendarAppointment, AppointmentStatus } from '../../types/calendar';
 
 interface AppointmentModalProps {
@@ -86,6 +87,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [serviceSearch, setServiceSearch] = useState('');
   
   const { token } = useTenant();
+  const { success, error: showError } = useToast();
   const isNewAppointment = !appointmentId;
 
   useEffect(() => {
@@ -148,6 +150,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     } catch (err) {
       console.error('Failed to fetch form data:', err);
       setError('Nie udało się załadować danych formularza');
+      showError('Nie udało się załadować danych formularza');
     } finally {
       setLoadingData(false);
     }
@@ -164,9 +167,11 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
       setAppointment({ ...appointment, status: newStatus });
       onUpdate(appointment.id, newStatus);
+      success('Status wizyty został zaktualizowany');
     } catch (err) {
       console.error('Failed to update status:', err);
       setError('Nie udało się zaktualizować statusu');
+      showError('Nie udało się zaktualizować statusu');
     } finally {
       setSaving(false);
     }
@@ -190,12 +195,13 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
       await api.post('/api/v1/appointments', appointmentData);
       
-      // Refresh calendar by calling onUpdate with dummy values
+      success('Wizyta została pomyślnie utworzona');
       onUpdate('new', 'CONFIRMED');
       onClose();
     } catch (err) {
       console.error('Failed to create appointment:', err);
       setError('Nie udało się utworzyć wizyty');
+      showError('Nie udało się utworzyć wizyty');
     } finally {
       setSaving(false);
     }
@@ -204,18 +210,22 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const validateForm = (): boolean => {
     if (!formData.clientId) {
       setError('Wybierz klienta');
+      showError('Wybierz klienta');
       return false;
     }
     if (formData.serviceIds.length === 0) {
       setError('Wybierz przynajmniej jedną usługę');
+      showError('Wybierz przynajmniej jedną usługę');
       return false;
     }
     if (!formData.staffId) {
       setError('Wybierz pracownika');
+      showError('Wybierz pracownika');
       return false;
     }
     if (!formData.date || !formData.startTime) {
       setError('Wybierz datę i czas');
+      showError('Wybierz datę i czas');
       return false;
     }
     return true;
