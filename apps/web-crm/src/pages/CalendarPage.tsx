@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon, AlertTriangle } from 'lucide-react';
 import { format, addDays, subDays, addWeeks, subWeeks, startOfWeek } from 'date-fns';
 import { CalendarGrid } from '../components/calendar/CalendarGrid';
 import { CalendarFilters } from '../components/calendar/CalendarFilters';
@@ -101,6 +101,27 @@ export default function CalendarPage() {
         </div>
       </div>
 
+      {/* Error Banner - ALWAYS VISIBLE IF ERROR */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start">
+          <AlertTriangle className="h-5 w-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <h3 className="text-sm font-medium text-red-800 mb-1">
+              Nie udało się załadować wizyt
+            </h3>
+            <p className="text-sm text-red-600 mb-3">
+              {error}. Kalendarz działa w trybie offline.
+            </p>
+            <button
+              onClick={refetch}
+              className="text-sm bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded transition-colors"
+            >
+              Spróbuj ponownie
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Navigation - FLAT DESIGN */}
       <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
         <div className="flex items-center justify-between">
@@ -180,39 +201,19 @@ export default function CalendarPage() {
           />
         </div>
 
-        {/* Calendar Grid - FLAT STYLING */}
+        {/* Calendar Grid - ALWAYS RENDER */}
         <div className="flex-1 overflow-hidden">
-          {error ? (
-            <div className="h-full flex items-center justify-center">
-              <div className="text-center bg-white rounded-lg border border-gray-200 p-8 max-w-md">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
-                  <CalendarIcon className="h-8 w-8 text-red-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">
-                  Błąd ładowania
-                </h3>
-                <p className="text-gray-600 mb-4">{error}</p>
-                <button
-                  onClick={refetch}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Spróbuj ponownie
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="calendar-grid h-full">
-              <CalendarGrid
-                view={view}
-                currentDate={currentDate}
-                appointments={appointments}
-                onAppointmentClick={setSelectedAppointment}
-                onSlotClick={handleSlotClick}
-                onAppointmentDrop={rescheduleAppointment}
-                loading={loading}
-              />
-            </div>
-          )}
+          <div className="calendar-grid h-full">
+            <CalendarGrid
+              view={view}
+              currentDate={currentDate}
+              appointments={appointments || []} {/* ALWAYS PROVIDE ARRAY */}
+              onAppointmentClick={setSelectedAppointment}
+              onSlotClick={handleSlotClick}
+              onAppointmentDrop={rescheduleAppointment}
+              loading={loading}
+            />
+          </div>
         </div>
       </div>
 
