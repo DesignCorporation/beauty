@@ -100,6 +100,97 @@ router.get('/staff', async (req, res) => {
   }
 });
 
+// GET /crm/appointments - List appointments for calendar
+router.get('/appointments', async (req, res) => {
+  try {
+    const salonId = req.tenant!.salonId;
+    const tprisma = tenantPrisma(salonId);
+
+    const { date, view = 'day', staffIds, statuses } = req.query;
+
+    if (!date || typeof date !== 'string') {
+      return res.status(400).json({ error: 'date query param required' });
+    }
+
+    const baseDate = new Date(date);
+    let startRange = new Date(baseDate);
+    let endRange = new Date(baseDate);
+
+    startRange.setHours(0, 0, 0, 0);
+
+    if (view === 'week') {
+      const day = baseDate.getDay();
+      const diffToMonday = (day + 6) % 7;
+      startRange.setDate(baseDate.getDate() - diffToMonday);
+      endRange = new Date(startRange);
+      endRange.setDate(startRange.getDate() + 7);
+    } else if (view === 'month') {
+      startRange = new Date(baseDate.getFullYear(), baseDate.getMonth(), 1);
+      endRange = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 1);
+    } else {
+      endRange.setDate(baseDate.getDate() + 1);
+    }
+
+    const where: any = {
+      salonId,
+      startAt: {
+        gte: startRange,
+        lt: endRange
+      }
+    };
+
+    if (staffIds) {
+      const list = (staffIds as string).split(',').filter(Boolean);
+      if (list.length > 0) {
+        where.staffId = { in: list };
+      }
+    }
+
+    if (statuses) {
+      const list = (statuses as string).split(',').filter(Boolean);
+      if (list.length > 0) {
+        where.status = { in: list };
+      }
+    }
+
+    const appointments = await tprisma.appointment.findMany({
+      where,
+      include: {
+        client: { select: { id: true, name: true } },
+        staff: { select: { id: true, name: true, color: true } },
+        services: {
+          include: {
+            service: { select: { id: true, baseName: true, priceAmount: true, priceCurrency: true } }
+          }
+        }
+      },
+      orderBy: { startAt: 'asc' }
+    });
+
+    const result = appointments.map(appt => ({
+      id: appt.id,
+      clientId: appt.clientId,
+      clientName: appt.client.name,
+      staffId: appt.staffId ?? '',
+      staffName: appt.staff?.name || 'Unassigned',
+      staffColor: appt.staff?.color || undefined,
+      serviceIds: appt.services.map(s => s.serviceId),
+      serviceNames: appt.services.map(s => s.service.baseName),
+      startAt: appt.startAt.toISOString(),
+      endAt: appt.endAt.toISOString(),
+      status: appt.status,
+      price: appt.services.reduce((sum, s) => sum + Number(s.service.priceAmount), 0),
+      currency: appt.services[0]?.service.priceCurrency || 'PLN',
+      notes: appt.notes || undefined
+    }));
+
+    res.json({ data: result });
+  } catch (error) {
+    logger.error('CRM: Failed to fetch appointments:', error);
+    res.status(500).json({ error: 'Failed to fetch appointments' });
+  }
+});
+
 // POST /crm/appointments - Create new appointment
 router.post('/appointments', async (req, res) => {
   try {

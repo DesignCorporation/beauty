@@ -67,7 +67,7 @@ src/types/calendar.ts         # TypeScript interfaces
 ### API Endpoints
 ```typescript
 // Fetch appointments
-GET /api/v1/crm/appointments?date=2025-01-28&view=week&staffIds=123&statuses=CONFIRMED
+GET /crm/appointments?date=2025-01-28&view=week&staffIds=123&statuses=CONFIRMED
 
 // Update appointment status
 PATCH /api/v1/crm/appointments/{id}/status
