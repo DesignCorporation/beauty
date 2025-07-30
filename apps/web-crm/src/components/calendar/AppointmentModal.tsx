@@ -138,9 +138,9 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setLoadingData(true);
     try {
       const [clientsRes, servicesRes, staffRes] = await Promise.all([
-        api.get('/api/v1/clients'),
-        api.get('/api/v1/services'),
-        api.get('/api/v1/staff')
+        api.get('/crm/clients'),
+        api.get('/crm/services'),
+        api.get('/crm/staff')
       ]);
 
       setClients(clientsRes.data || clientsRes);
@@ -192,7 +192,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         notes: formData.notes || undefined
       };
 
-      await api.post('/api/v1/appointments', appointmentData);
+      await api.post('/crm/appointments', appointmentData);
       
       success('Wizyta została pomyślnie utworzona');
       onUpdate('new', 'CONFIRMED');
