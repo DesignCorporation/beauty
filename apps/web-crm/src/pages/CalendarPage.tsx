@@ -8,6 +8,46 @@ import { useAppointments } from '../hooks/useAppointments';
 import { useTenant } from '../hooks/useTenant';
 import type { CalendarView, AppointmentFilters } from '../types/calendar';
 
+// ДЕМО записи для календаря (временные для тестирования)
+const demoAppointments = [
+  {
+    id: 'demo-1',
+    clientName: 'Anna Kowalska',
+    serviceNames: ['Strzyżenie damskie'],
+    staffName: 'Magdalena',
+    startAt: '2025-07-30T10:00:00Z',
+    endAt: '2025-07-30T11:00:00Z',
+    status: 'CONFIRMED' as const,
+    price: 35,
+    currency: 'PLN',
+    notes: ''
+  },
+  {
+    id: 'demo-2',
+    clientName: 'Maria Nowak', 
+    serviceNames: ['Manicure hybrydowy'],
+    staffName: 'Anna',
+    startAt: '2025-07-30T14:00:00Z',
+    endAt: '2025-07-30T15:00:00Z',
+    status: 'PENDING' as const,
+    price: 30,
+    currency: 'PLN',
+    notes: ''
+  },
+  {
+    id: 'demo-3',
+    clientName: 'Katarzyna Wiśniewska',
+    serviceNames: ['Koloryzacja pełna'],
+    staffName: 'Magdalena',
+    startAt: '2025-07-31T09:00:00Z', 
+    endAt: '2025-07-31T11:00:00Z',
+    status: 'CONFIRMED' as const,
+    price: 70,
+    currency: 'PLN',
+    notes: ''
+  }
+];
+
 export default function CalendarPage() {
   const [view, setView] = useState<CalendarView>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -27,6 +67,9 @@ export default function CalendarPage() {
     salonId,
     token
   });
+
+  // Объединяем реальные записи с демо записями
+  const allAppointments = [...(appointments || []), ...demoAppointments];
 
   const navigateDate = (direction: 'prev' | 'next') => {
     switch (view) {
@@ -201,13 +244,13 @@ export default function CalendarPage() {
           />
         </div>
 
-        {/* Calendar Grid - ALWAYS RENDER */}
+        {/* Calendar Grid - ALWAYS RENDER WITH DEMO DATA */}
         <div className="flex-1 overflow-hidden">
           <div className="calendar-grid h-full">
             <CalendarGrid
               view={view}
               currentDate={currentDate}
-              appointments={appointments || []}
+              appointments={allAppointments}
               onAppointmentClick={setSelectedAppointment}
               onSlotClick={handleSlotClick}
               onAppointmentDrop={rescheduleAppointment}
