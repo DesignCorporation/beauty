@@ -8,25 +8,23 @@ import { Request, Response, NextFunction } from 'express';
 import { getSalonConfigBySlug } from '../lib/salonConfig';
 import { logger } from '@dc-beauty/utils';
 
-declare global {
-  namespace Express {
-    interface Request {
-      publicTenant?: {
-        salonId: string;
-        salonSlug: string;
-        salonName: string;
-        plan: 'STARTER' | 'PRO' | 'ENTERPRISE';
-        locales: {
-          primary: string;
-          supported: string[];
-          publicDefault?: string;
-        };
-        currency: string;
-        timeZone?: string;
-        source: 'slug';
-        isPublic: true;
+declare module 'express-serve-static-core' {
+  interface Request {
+    publicTenant?: {
+      salonId: string;
+      salonSlug: string;
+      salonName: string;
+      plan: 'STARTER' | 'PRO' | 'ENTERPRISE';
+      locales: {
+        primary: string;
+        supported: string[];
+        publicDefault?: string;
       };
-    }
+      currency: string;
+      timeZone?: string;
+      source: 'slug';
+      isPublic: true;
+    };
   }
 }
 
