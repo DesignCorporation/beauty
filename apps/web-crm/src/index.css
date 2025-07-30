@@ -2,6 +2,9 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* Import calendar-specific styles */
+@import './styles/calendar.css';
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* Flat Design CSS Variables - Pastel Colors */
@@ -206,45 +209,6 @@
   }
   
   .sidebar-link-inactive:hover {
-    background-color: var(--bg-hover);
-    color: var(--text-primary);
-  }
-  
-  /* Calendar specific styles - FLAT */
-  .calendar-grid {
-    border-radius: 8px;
-    background-color: var(--bg-surface);
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-  }
-  
-  .calendar-header {
-    background-color: var(--pastel-lavender);
-    color: var(--text-primary);
-    padding: 24px;
-    border-bottom: 1px solid var(--border-color);
-  }
-  
-  .calendar-day {
-    border: 1px solid var(--border-light);
-    background-color: var(--bg-surface);
-    transition: background-color 0.2s ease;
-  }
-  
-  .calendar-day:hover {
-    background-color: var(--bg-hover);
-  }
-  
-  .time-slot {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border-light);
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
-  
-  .time-slot:hover {
     background-color: var(--bg-hover);
     color: var(--text-primary);
   }
