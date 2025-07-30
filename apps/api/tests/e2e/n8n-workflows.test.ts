@@ -2,6 +2,8 @@ import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import { app } from '../../src/server';
 import { prisma } from '@dc-beauty/db';
+import fs from 'fs';
+import path from 'path';
 
 describe('TP-08: n8n Workflows Integration', () => {
   const API_KEY = process.env.INTERNAL_API_KEY || 'test-api-key';
@@ -353,9 +355,6 @@ describe('TP-08: n8n Workflows Integration', () => {
 
   describe('Workflow Templates Validation', () => {
     test('Should validate workflow JSON structure', () => {
-      const fs = require('fs');
-      const path = require('path');
-      
       const workflowFiles = [
         '../../docker/n8n/workflows/beauty-24h-reminder.json',
         '../../docker/n8n/workflows/beauty-2h-reminder.json', 
