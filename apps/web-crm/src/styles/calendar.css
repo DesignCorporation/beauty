@@ -1,185 +1,169 @@
-/* Calendar Grid Styles */
+/* Calendar Grid Styles - Fresha-inspired design */
+.calendar-grid-container {
+  @apply h-full;
+}
+
 .calendar-grid {
-  @apply min-h-screen overflow-auto;
+  @apply bg-white rounded-lg border border-gray-200 overflow-hidden;
 }
 
-.calendar-time-slot {
-  @apply h-8 border-b border-gray-100 transition-colors duration-150;
+/* Time Grid Improvements */
+.time-grid {
+  @apply divide-y divide-gray-100;
 }
 
-.calendar-time-slot:hover {
-  @apply bg-gray-50;
+.time-row {
+  @apply grid h-14;
+  grid-template-columns: 80px repeat(7, 1fr);
 }
 
-.calendar-day-header {
-  @apply h-16 border-b border-gray-200 p-3 text-center sticky top-0 z-10;
+.time-label {
+  @apply px-3 pt-2 text-xs font-medium text-gray-500 bg-gray-50 border-r border-gray-200;
 }
 
-.calendar-day-header.today {
+.time-cell {
+  @apply border-r border-gray-100 cursor-pointer transition-colors relative group;
+}
+
+.time-cell:hover {
   @apply bg-blue-50;
 }
 
-.calendar-day-column {
-  @apply border-r border-gray-200 relative min-h-full;
+/* Day Headers */
+.day-header {
+  @apply h-16 p-3 text-center border-r border-gray-200 bg-gray-50;
 }
 
-.calendar-time-column {
-  @apply border-r border-gray-200 bg-gray-50 sticky left-0 z-20;
+.day-header.today {
+  @apply bg-blue-50;
 }
 
-/* Appointment Block Styles */
+.day-header .day-name {
+  @apply text-xs text-gray-500 uppercase font-medium;
+}
+
+.day-header .day-number {
+  @apply text-lg font-bold mt-1 text-gray-900;
+}
+
+.day-header.today .day-number {
+  @apply text-blue-600;
+}
+
+/* Appointment Blocks */
 .appointment-block {
-  @apply rounded-lg border-l-4 p-2 cursor-pointer transition-all duration-200 shadow-sm;
-  @apply hover:shadow-md;
+  @apply rounded-lg shadow-sm border transition-all duration-200 cursor-pointer;
+  min-height: 3.5rem;
 }
 
-.appointment-block.dragging {
-  @apply opacity-50 scale-95;
+.appointment-block:hover {
+  @apply shadow-md transform scale-105;
 }
 
-.appointment-block.confirmed {
-  @apply bg-blue-50 border-blue-200 text-blue-800;
+.appointment-block.status-pending {
+  @apply bg-yellow-100 border-yellow-300 text-yellow-800;
 }
 
-.appointment-block.pending {
-  @apply bg-yellow-50 border-yellow-200 text-yellow-800;
+.appointment-block.status-confirmed {
+  @apply bg-blue-100 border-blue-300 text-blue-800;
 }
 
-.appointment-block.completed {
-  @apply bg-green-50 border-green-200 text-green-800;
+.appointment-block.status-completed {
+  @apply bg-green-100 border-green-300 text-green-800;
 }
 
-.appointment-block.canceled {
-  @apply bg-red-50 border-red-200 text-red-800;
+.appointment-block.status-cancelled {
+  @apply bg-gray-100 border-gray-300 text-gray-600;
+}
+
+/* Slot Hover Effects */
+.time-cell::before {
+  @apply absolute inset-0 bg-blue-100 opacity-0 group-hover:opacity-30 transition-opacity pointer-events-none;
 }
 
 /* Current Time Line */
 .current-time-line {
-  @apply absolute left-0 right-0 z-20 pointer-events-none;
+  @apply absolute left-0 right-0 h-0.5 bg-red-500 z-20;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
 }
 
-.current-time-dot {
-  @apply w-2 h-2 bg-red-500 rounded-full -ml-1;
+.current-time-line::before {
+  @apply absolute left-0 w-2 h-2 bg-red-500 rounded-full transform -translate-y-1/2;
+  content: '';
 }
 
-.current-time-line-bar {
-  @apply h-0.5 bg-red-500 flex-1;
+/* Loading State */
+.calendar-loading {
+  @apply h-full flex items-center justify-center bg-white rounded-lg border border-gray-200;
 }
 
-/* Calendar Filters */
-.calendar-filters {
-  @apply w-80 bg-white border-r border-gray-200 overflow-y-auto;
-}
-
-.filter-section {
-  @apply mb-6;
-}
-
-.filter-header {
-  @apply flex items-center justify-between mb-3;
-}
-
-.filter-title {
-  @apply flex items-center space-x-2;
-}
-
-.filter-actions {
-  @apply flex space-x-2;
-}
-
-.filter-list {
-  @apply space-y-2;
-}
-
-.filter-item {
-  @apply flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded;
-}
-
-.filter-checkbox {
-  @apply rounded border-gray-300 text-blue-600 focus:ring-blue-500;
-}
-
-/* Status badges */
-.status-badge {
-  @apply inline-flex px-2 py-1 text-xs font-medium rounded-full;
-}
-
-.status-badge.pending {
-  @apply bg-yellow-100 text-yellow-800;
-}
-
-.status-badge.confirmed {
-  @apply bg-blue-100 text-blue-800;
-}
-
-.status-badge.completed {
-  @apply bg-green-100 text-green-800;
-}
-
-.status-badge.canceled {
-  @apply bg-red-100 text-red-800;
-}
-
-/* Modal Styles */
-.appointment-modal {
-  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
-}
-
-.appointment-modal-content {
-  @apply bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden;
-}
-
-.appointment-modal-header {
-  @apply flex items-center justify-between p-6 border-b border-gray-200;
-}
-
-.appointment-modal-body {
-  @apply p-6 overflow-y-auto;
-}
-
-.appointment-modal-footer {
-  @apply flex justify-end space-x-3 p-6 border-t border-gray-200;
-}
-
-/* Loading States */
-.loading-spinner {
+.calendar-loading .spinner {
   @apply animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600;
 }
 
-.loading-skeleton {
-  @apply bg-gray-200 rounded animate-pulse;
+/* Empty State */
+.calendar-empty {
+  @apply absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-50;
 }
 
-/* Responsive */
+.calendar-empty .icon {
+  @apply w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center;
+}
+
+.calendar-empty .title {
+  @apply text-sm font-medium text-gray-900 mb-1;
+}
+
+.calendar-empty .subtitle {
+  @apply text-xs text-gray-500 mb-3;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .calendar-filters {
-    @apply w-full;
+  .time-row {
+    grid-template-columns: 60px repeat(7, 1fr);
   }
   
+  .time-label {
+    @apply px-2 text-xs;
+  }
+  
+  .day-header {
+    @apply p-2;
+  }
+  
+  .day-header .day-number {
+    @apply text-base;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
   .calendar-grid {
-    @apply text-sm;
+    @apply bg-gray-900 border-gray-700;
   }
   
-  .calendar-time-slot {
-    @apply h-12;
+  .time-label {
+    @apply bg-gray-800 text-gray-400 border-gray-700;
   }
   
-  .appointment-block {
-    @apply p-1 text-xs;
+  .day-header {
+    @apply bg-gray-800 border-gray-700;
   }
-}
-
-/* Text truncation utility */
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  
+  .day-header .day-name {
+    @apply text-gray-400;
+  }
+  
+  .day-header .day-number {
+    @apply text-gray-100;
+  }
+  
+  .time-cell {
+    @apply border-gray-700;
+  }
+  
+  .time-cell:hover {
+    @apply bg-blue-900 bg-opacity-50;
+  }
 }
