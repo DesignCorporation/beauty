@@ -22,7 +22,7 @@
 }
 
 .time-cell {
-  @apply border-r border-gray-100 cursor-pointer transition-colors relative group;
+  @apply border-r border-gray-100 cursor-pointer transition-colors relative;
 }
 
 .time-cell:hover {
